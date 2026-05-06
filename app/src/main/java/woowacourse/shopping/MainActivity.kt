@@ -11,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import woowacourse.shopping.domain.CartContent
-import woowacourse.shopping.domain.CartContentQuantity
 import woowacourse.shopping.ui.cart.CartActivity
 import woowacourse.shopping.ui.productdetail.ProductDetailActivity
 import woowacourse.shopping.ui.productlist.ProductListScreen
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
             productListStateHolder.cart = productListStateHolder.addCartItem(
                 CartContent(
                     product = productListStateHolder.products.first { it.id == addedId },
-                    cartContentQuantity = CartContentQuantity(1),
+                    quantity = 1,
                 ),
             )
             productListStateHolder.uiModels = productListStateHolder.toProductUiModels()
