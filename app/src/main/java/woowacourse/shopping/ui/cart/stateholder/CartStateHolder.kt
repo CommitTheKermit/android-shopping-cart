@@ -1,5 +1,6 @@
 package woowacourse.shopping.ui.cart.stateholder
 
+import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -9,14 +10,14 @@ import androidx.compose.runtime.setValue
 import androidx.core.os.BundleCompat
 import woowacourse.shopping.ui.state.ProductUiModel
 
-class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1) {
+class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1, private val initialPageSize: Int = 5) {
     var totalCartContents: List<ProductUiModel> = initialItems.toList()
     var page by mutableIntStateOf(initialPage)
     var cartContents by mutableStateOf(
         pagination(
             page = initialPage,
             productUiModels = totalCartContents,
-            pageSIze = 5,
+            pageSize = initialPageSize,
         ),
     )
 
@@ -24,7 +25,7 @@ class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1) 
         return page == 1
     }
 
-    fun isEndPage(): Boolean = page >= lastPage(5)
+    fun isEndPage(): Boolean = page >= lastPage(initialPageSize)
 
     private fun lastPage(pageSize: Int): Int {
         if (totalCartContents.isEmpty()) return 1
@@ -33,21 +34,21 @@ class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1) 
 
     fun moveToPreviousPage() {
         page -= 1
-        cartContents = pagination(page = page, productUiModels = totalCartContents, pageSIze = 5)
+        cartContents = pagination(page = page, productUiModels = totalCartContents, pageSize = initialPageSize)
     }
 
     fun moveToNextPage() {
         page += 1
-        cartContents = pagination(page = page, productUiModels = totalCartContents, pageSIze = 5)
+        cartContents = pagination(page = page, productUiModels = totalCartContents, pageSize = initialPageSize)
     }
 
     private fun pagination(
         page: Int,
         productUiModels: List<ProductUiModel>,
-        pageSIze: Int,
+        pageSize: Int,
     ): List<ProductUiModel> {
-        val toIndex = minOf(page * pageSIze, productUiModels.size)
-        return productUiModels.subList((page - 1) * pageSIze, toIndex)
+        val toIndex = minOf(page * pageSize, productUiModels.size)
+        return productUiModels.subList((page - 1) * pageSize, toIndex)
     }
 
     fun deleteCartItem(id: String) {
@@ -55,13 +56,15 @@ class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1) 
         cartContents = pagination(
             page = page,
             productUiModels = totalCartContents,
-            pageSIze = 5,
+            pageSize = 5,
         )
     }
 
     companion object {
         private const val KEY_PAGE = "page"
         private const val KEY_ITEMS = "items"
+
+        private const val PAGE_SIZE = "page_size"
 
         val Saver: Saver<CartStateHolder, Bundle> = Saver(
             save = { holder ->
@@ -75,7 +78,8 @@ class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1) 
                     ?: emptyList()
 
                 val page = bundle.getInt(KEY_PAGE, 1)
-                CartStateHolder(items, page)
+                val pageSize = bundle.getInt(PAGE_SIZE, 5)
+                CartStateHolder(items, page, pageSize)
             },
         )
     }
