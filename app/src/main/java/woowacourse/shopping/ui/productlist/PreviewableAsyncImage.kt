@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -18,7 +17,6 @@ fun PreviewableAsyncImage(
     description: String,
     modifier: Modifier = Modifier,
 ) {
-    val isPreview = LocalInspectionMode.current
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(imageUrl)
@@ -29,10 +27,6 @@ fun PreviewableAsyncImage(
         modifier = modifier
             .fillMaxWidth(),
         error =
-        if (isPreview) {
-            painterResource(R.drawable.ic_launcher_background)
-        } else {
-            null
-        },
+        painterResource(R.drawable.ic_launcher_background),
     )
 }
