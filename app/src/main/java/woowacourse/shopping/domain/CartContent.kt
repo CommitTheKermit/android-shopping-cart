@@ -1,6 +1,18 @@
 package woowacourse.shopping.domain
 
-class CartContent(val product: Product, private val cartContentQuantity: CartContentQuantity) {
+class CartContent(val product: Product, private val quantity: Int) {
+    init {
+        require(quantity > 0) { "수량은 1보다 작을 수 없습니다. 수량 : $quantity" }
+    }
+
+    fun addQuantity(
+        productId: String,
+        append: Int,
+    ): CartContent {
+        require(hasProductId(productId)) { "같은 상품만 더할 수 있습니다." }
+        return CartContent(product, quantity + append)
+    }
+
     val productId: String get() = product.id
     fun hasProductId(id: String): Boolean = productId == id
 
@@ -11,14 +23,14 @@ class CartContent(val product: Product, private val cartContentQuantity: CartCon
         other as CartContent
 
         if (product != other.product) return false
-        if (cartContentQuantity != other.cartContentQuantity) return false
+        if (quantity != other.quantity) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = product.hashCode()
-        result = 31 * result + cartContentQuantity.hashCode()
+        result = 31 * result + quantity.hashCode()
         return result
     }
 }
