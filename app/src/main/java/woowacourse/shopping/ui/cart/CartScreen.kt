@@ -152,7 +152,7 @@ private fun CartItemList(
         ) {
             CartItem(
                 imageUrl = it.imageUrl,
-                title = it.title,
+                name = it.name,
                 price = it.price,
                 onDelete = {
                     onDelete(it.id)

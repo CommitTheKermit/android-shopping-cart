@@ -43,7 +43,7 @@ fun ProductList(
         ) {
             ProductItem(
                 imageUrl = it.imageUrl,
-                title = it.title,
+                name = it.name,
                 price = it.price,
                 modifier = Modifier.clickable(
                     onClick = {

@@ -28,7 +28,7 @@ import woowacourse.shopping.ui.productlist.PreviewableAsyncImage
 @Composable
 fun CartItem(
     imageUrl: String,
-    title: String,
+    name: String,
     price: String,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
@@ -52,7 +52,7 @@ fun CartItem(
                 .fillMaxWidth(),
         ) {
             Text(
-                text = title,
+                text = name,
                 fontWeight = FontWeight.W700,
                 fontSize = 18.sp,
             )
@@ -74,7 +74,7 @@ fun CartItem(
         ) {
             PreviewableAsyncImage(
                 imageUrl = imageUrl,
-                description = title,
+                description = name,
                 modifier = Modifier
                     .size(width = 136.dp, height = 72.dp),
             )
@@ -93,7 +93,7 @@ fun CartItem(
 private fun CartItemPreview() {
     CartItem(
         imageUrl = "",
-        title = "프리뷰",
+        name = "프리뷰",
         price = "1,000원",
         onDelete = {},
     )

@@ -49,8 +49,8 @@ class CartTest {
         assertEquals(result, false)
     }
 
-    private fun normalProduct(title: String): Product = Product(
-        name = title,
+    private fun normalProduct(name: String): Product = Product(
+        name = name,
         price = Money(1000),
         imageUrl = "",
     )

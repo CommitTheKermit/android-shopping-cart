@@ -41,11 +41,11 @@ class CartContentTest {
     }
 
     private fun normalProduct(
-        title: String,
+        name: String,
         id: String = UUID.randomUUID().toString(),
     ): Product = Product(
         id = id,
-        name = title,
+        name = name,
         price = Money(1000),
         imageUrl = "",
     )

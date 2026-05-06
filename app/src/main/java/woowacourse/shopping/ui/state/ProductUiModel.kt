@@ -7,7 +7,7 @@ import woowacourse.shopping.ui.format.NumberFormatRule
 import woowacourse.shopping.ui.format.PriceFormatter
 
 @Parcelize
-data class ProductUiModel(val title: String, val price: String, val imageUrl: String, val id: String) : Parcelable {
+data class ProductUiModel(val name: String, val price: String, val imageUrl: String, val id: String) : Parcelable {
     companion object {
         fun of(
             name: String,
@@ -22,7 +22,7 @@ data class ProductUiModel(val title: String, val price: String, val imageUrl: St
             )
 
             return ProductUiModel(
-                title = name,
+                name = name,
                 price = priceFormatter.format(price),
                 imageUrl = imageUrl,
                 id = id,

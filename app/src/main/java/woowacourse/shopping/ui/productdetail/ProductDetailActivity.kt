@@ -27,7 +27,7 @@ class ProductDetailActivity : ComponentActivity() {
                 } else {
                     ProductDetailScreen(
                         imageUrl = uiModel.imageUrl,
-                        title = uiModel.title,
+                        name = uiModel.name,
                         price = uiModel.price,
                         onCloseClick = { finish() },
                         onAddToCartClick = {

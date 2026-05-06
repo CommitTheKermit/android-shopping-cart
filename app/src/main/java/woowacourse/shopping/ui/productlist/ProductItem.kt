@@ -20,19 +20,19 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ProductItem(
     imageUrl: String,
-    title: String,
+    name: String,
     price: String,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         PreviewableAsyncImage(
             imageUrl = imageUrl,
-            description = title,
+            description = name,
             modifier = Modifier.aspectRatio(1f),
         )
         Spacer(modifier = Modifier.height(9.dp))
         Text(
-            text = title,
+            text = name,
             fontWeight = FontWeight.W700,
             fontSize = 18.sp,
             lineHeight = 24.sp,
@@ -55,7 +55,7 @@ fun ProductItem(
 private fun PreviewProduct() {
     ProductItem(
         imageUrl = "asd",
-        title = "Pet보틀-정사각형 50000ml",
+        name = "Pet보틀-정사각형 50000ml",
         price = "12,000원",
         modifier = Modifier
             .width(160.dp)

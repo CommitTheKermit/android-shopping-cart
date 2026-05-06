@@ -34,7 +34,7 @@ import woowacourse.shopping.ui.productdetail.ProductAppBar
 @Composable
 fun ProductDetailScreen(
     imageUrl: String,
-    title: String,
+    name: String,
     price: String,
     onCloseClick: () -> Unit,
     onAddToCartClick: () -> Unit,
@@ -57,13 +57,13 @@ fun ProductDetailScreen(
             Column {
                 PreviewableAsyncImage(
                     imageUrl = imageUrl,
-                    description = title,
+                    description = name,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f),
                 )
                 Text(
-                    text = title,
+                    text = name,
                     fontWeight = FontWeight.W700,
                     fontSize = 24.sp,
                     modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
@@ -160,7 +160,7 @@ fun ProductDetailErrorScreen(
 private fun ProductScreenPreview() {
     ProductDetailScreen(
         imageUrl = "",
-        title = "프리뷰",
+        name = "프리뷰",
         price = "1,000원",
         onCloseClick = {},
         onAddToCartClick = {},
