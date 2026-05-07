@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.shopping.R
+import woowacourse.shopping.ui.common.ProductQuantitySelector
 import woowacourse.shopping.ui.productdetail.ProductAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,14 +77,12 @@ fun ProductDetailScreen(
                         .padding(vertical = 16.dp, horizontal = 18.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.product_detail_price),
-                        fontWeight = FontWeight.W400,
-                        fontSize = 20.sp,
-                    )
-                    Text(
                         text = price,
                         fontWeight = FontWeight.W400,
                         fontSize = 20.sp,
+                    )
+                    ProductQuantitySelector(
+                        modifier = Modifier.size(width = 126.dp, height = 42.dp),
                     )
                 }
             }

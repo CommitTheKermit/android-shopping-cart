@@ -1,10 +1,13 @@
 package woowacourse.shopping.ui.cart
 
+import android.R.attr.end
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.shopping.R
+import woowacourse.shopping.ui.common.ProductQuantitySelector
 import woowacourse.shopping.ui.productlist.PreviewableAsyncImage
 
 @Composable
@@ -78,12 +82,20 @@ fun CartItem(
                 modifier = Modifier
                     .size(width = 136.dp, height = 72.dp),
             )
-            Text(
-                text = price,
-                fontWeight = FontWeight.W400,
-                fontSize = 16.sp,
-                color = Color(0xff555555),
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                ProductQuantitySelector(
+                    modifier = Modifier
+                        .padding(end = 5.dp)
+                        .size(width = 126.dp, height = 42.dp),
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = price,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 16.sp,
+                    color = Color(0xff555555),
+                )
+            }
         }
     }
 }
