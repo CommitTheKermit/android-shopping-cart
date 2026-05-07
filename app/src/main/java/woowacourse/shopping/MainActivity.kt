@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import woowacourse.shopping.AppContainer
 import woowacourse.shopping.feature.cart.CartActivity
 import woowacourse.shopping.feature.productdetail.ProductDetailActivity
 import woowacourse.shopping.feature.productlist.ProductListScreen
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        AppContainer.init(applicationContext)
 
         val toProductDetailIntent = Intent(this, ProductDetailActivity::class.java)
         val toCartIntent = Intent(this, CartActivity::class.java)

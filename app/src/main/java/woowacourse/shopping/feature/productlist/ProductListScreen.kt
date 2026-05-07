@@ -20,7 +20,7 @@ import woowacourse.shopping.feature.productlist.viewmodel.ProductListViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
-    vm: ProductListViewModel = viewModel(),
+    vm: ProductListViewModel = viewModel(factory = ProductListViewModel.Factory),
     onProductClick: (ProductUiModel) -> Unit,
     onCartIconClick: () -> Unit,
     modifier: Modifier = Modifier,
