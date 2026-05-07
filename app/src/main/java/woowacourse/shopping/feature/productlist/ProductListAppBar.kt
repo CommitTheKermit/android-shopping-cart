@@ -29,6 +29,7 @@ import woowacourse.shopping.R
 @Composable
 fun ProductListAppBar(
     onCartIconClick: () -> Unit,
+    cartQuantities: Int,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -60,7 +61,7 @@ fun ProductListAppBar(
                         .background(Color(0xff04c09e))
                         .size(20.dp),
                 ) {
-                    Text("2", color = Color.White, fontSize = 14.sp)
+                    Text(cartQuantities.toString(), color = Color.White, fontSize = 14.sp)
                 }
             }
         },
@@ -76,5 +77,8 @@ fun ProductListAppBar(
 @Preview
 @Composable
 private fun ProductListAppBarPreview() {
-    ProductListAppBar({})
+    ProductListAppBar(
+        {},
+        cartQuantities = 2,
+    )
 }
