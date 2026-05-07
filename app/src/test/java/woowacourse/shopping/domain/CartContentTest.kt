@@ -56,10 +56,48 @@ class CartContentTest {
         val content = CartContent(product, 1)
 
         // when : 상품에 1을 더할 때
-        val newContent = content.addQuantity(product.id, 1)
+        val newContent = content.addQuantity(1)
 
-        // then : Quantity의 수량이 2가 된다
+        // then : CartItem의 수량이 2가 된다
         assertEquals(2, newContent.quantity)
+    }
+
+    @Test
+    fun `상품의 수량을 바꿀 수 있다`() {
+        // given : 수량이 1개인 상품이 주어진다
+        val product = normalProduct()
+        val content = CartContent(product, 1)
+
+        // when : 상품의 수량을 2로 바꿨을 때
+        val newContent = content.changeQuantity(2)
+
+        // then : CartItem의 수량이 2가 된다
+        assertEquals(2, newContent.quantity)
+    }
+
+    @Test
+    fun `수량을 빼면 빠진 새 CartContent를 반환한다`() {
+        // given : 수량이 3개인 상품이 주어진다
+        val product = normalProduct()
+        val content = CartContent(product, 3)
+
+        // when : 1개를 뺏을 때
+        val newContent = content.decreaseQuantity(1)
+
+        // then : CartItem의 수량이 2가 된다
+        assertEquals(2, newContent.quantity)
+    }
+
+    @Test
+    fun `뺀 결과가 1개 미만이면 오류가 발생한다`() {
+        // given : 수량이 3개인 상품이 주어진다
+        val product = normalProduct()
+        val content = CartContent(product, 3)
+
+        // when & then : 4개를 뺏을 때 오류가 발생한다.
+        assertThrows<IllegalArgumentException> {
+            val newContent = content.decreaseQuantity(4)
+        }
     }
 
     private fun normalProduct(

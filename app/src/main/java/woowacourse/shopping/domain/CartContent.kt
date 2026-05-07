@@ -5,12 +5,17 @@ class CartContent(val product: Product, val quantity: Int) {
         require(quantity > 0) { "수량은 1보다 작을 수 없습니다. 수량 : $quantity" }
     }
 
-    fun addQuantity(
-        productId: String,
-        append: Int,
-    ): CartContent {
-        require(hasProductId(productId)) { "같은 상품만 더할 수 있습니다." }
-        return CartContent(product, quantity + append)
+    fun addQuantity(increment: Int): CartContent {
+        return CartContent(product, quantity + increment)
+    }
+
+    fun decreaseQuantity(decrement: Int): CartContent {
+        require(decrement <= quantity) { "존재하는 수량보다 많이 뺄 수 없습니다." }
+        return CartContent(product, quantity - decrement)
+    }
+
+    fun changeQuantity(newQuantity: Int): CartContent {
+        return CartContent(product, newQuantity)
     }
 
     val productId: String get() = product.id
