@@ -1,0 +1,32 @@
+package woowacourse.shopping.feature.common.state
+
+import android.os.Parcelable
+import java.text.DecimalFormat
+import kotlinx.parcelize.Parcelize
+import woowacourse.shopping.feature.format.NumberFormatRule
+import woowacourse.shopping.feature.format.PriceFormatter
+
+@Parcelize
+data class ProductUiModel(val name: String, val price: String, val imageUrl: String, val id: String) : Parcelable {
+    companion object {
+        fun of(
+            name: String,
+            price: Int,
+            imageUrl: String,
+            id: String,
+        ): ProductUiModel {
+
+            val priceFormatter = PriceFormatter(
+                rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
+                suffix = "원",
+            )
+
+            return ProductUiModel(
+                name = name,
+                price = priceFormatter.format(price),
+                imageUrl = imageUrl,
+                id = id,
+            )
+        }
+    }
+}
