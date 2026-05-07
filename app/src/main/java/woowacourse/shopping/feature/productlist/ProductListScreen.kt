@@ -8,27 +8,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import woowacourse.shopping.feature.common.state.ProductUiModel
+import woowacourse.shopping.feature.productlist.viewmodel.ProductListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
+    vm: ProductListViewModel = viewModel(),
     onProductClick: (ProductUiModel) -> Unit,
     onCartIconClick: () -> Unit,
-    onLoading: () -> Unit,
     modifier: Modifier = Modifier,
-    productUiModels: List<ProductUiModel>,
-    isEnd: Boolean,
-    isLoading: Boolean,
 ) {
+    val state by vm.uiState.collectAsStateWithLifecycle()
     Scaffold(
         containerColor = Color.White,
         modifier = modifier.fillMaxSize(),
         topBar = {
-            ProductListAppBar(onCartIconClick = onCartIconClick)
+            ProductListAppBar(onCartIconClick = onCartIconClick, cartQuantities = 0)
         },
     ) { innerPadding ->
         Column(
@@ -42,12 +44,14 @@ fun ProductListScreen(
                     .weight(1f),
             ) {
                 ProductList(
-                    products = productUiModels,
+                    products = state.uiModels,
                     onProductClick = onProductClick,
-                    onLoading = onLoading,
-                    isEnd = isEnd,
+                    onLoading = vm::loadingFetch,
+                    onIncrease = {},
+                    onDecrease = {},
+                    isEnd = state.isEnd,
                 )
-                if (isLoading) {
+                if (state.isLoading) {
                     LoadingIndicator()
                 }
             }
@@ -61,9 +65,5 @@ private fun PreviewProductListScreen() {
     ProductListScreen(
         onProductClick = { },
         onCartIconClick = { },
-        onLoading = {},
-        productUiModels = emptyList(),
-        isEnd = false,
-        isLoading = false,
     )
 }

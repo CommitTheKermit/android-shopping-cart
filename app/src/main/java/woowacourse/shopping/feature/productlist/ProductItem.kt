@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.productlist
 
+import android.R.attr.name
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,8 @@ fun ProductItem(
     imageUrl: String,
     name: String,
     price: String,
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -79,6 +82,8 @@ private fun PreviewProduct() {
         imageUrl = "asd",
         name = "Pet보틀-정사각형 50000ml",
         price = "12,000원",
+        onIncrease = {},
+        onDecrease = {},
         modifier = Modifier
             .width(160.dp)
             .padding(horizontal = 16.dp),

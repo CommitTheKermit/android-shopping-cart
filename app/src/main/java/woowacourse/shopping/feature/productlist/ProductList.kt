@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.productlist
 
+import android.R.attr.onClick
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,8 @@ fun ProductList(
     products: List<ProductUiModel>,
     onProductClick: (ProductUiModel) -> Unit,
     onLoading: () -> Unit,
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
     isEnd: Boolean,
 ) {
@@ -45,6 +48,8 @@ fun ProductList(
                 imageUrl = it.imageUrl,
                 name = it.name,
                 price = it.price,
+                onIncrease = onIncrease,
+                onDecrease = onDecrease,
                 modifier = Modifier.clickable(
                     onClick = {
                         onProductClick(it)
