@@ -63,6 +63,8 @@ fun ProductDetailScreen(
             productUiModel = productUiModel,
             onCloseClick = onCloseClick,
             onAddToCartClick = onAddToCartClick,
+            onIncrease = viewModel::increase,
+            onDecrease = viewModel::decrease,
             modifier = modifier,
         )
     }
@@ -73,6 +75,8 @@ fun ProductDetailContent(
     productUiModel: ProductUiModel,
     onCloseClick: () -> Unit,
     onAddToCartClick: () -> Unit,
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -117,7 +121,12 @@ fun ProductDetailContent(
                     )
                     ProductQuantitySelector(
                         quantity = productUiModel.quantity,
-                        modifier = Modifier.size(width = 126.dp, height = 42.dp),
+                        onIncrease = onIncrease,
+                        onDecrease = onDecrease,
+                        modifier = Modifier.size(
+                            width = 126.dp,
+                            height = 42.dp,
+                        ),
                     )
                 }
             }

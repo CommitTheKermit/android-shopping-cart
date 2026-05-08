@@ -29,6 +29,8 @@ class ProductDetailViewModel(
     private val _uiState = MutableStateFlow(ProductDetailUiState())
     val uiState: StateFlow<ProductDetailUiState> = _uiState.asStateFlow()
 
+    private lateinit var product: Product
+
     fun initialLoading(productId: String) {
         cartRefresh()
         loadingProduct(productId)
@@ -37,7 +39,7 @@ class ProductDetailViewModel(
     fun loadingProduct(productId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val product = productRepository.getProduct(productId)
+            product = productRepository.getProduct(productId)
             _uiState.update {
                 it.copy(
                     productUiModel = toProductUiModel(product),
@@ -66,6 +68,32 @@ class ProductDetailViewModel(
             id = product.id,
             quantity = uiState.value.cart.quantityOf(product.id),
         )
+    }
+
+    fun increase() {
+        viewModelScope.launch {
+            cartRepository.increase(
+                product,
+            )
+            cartRefresh()
+            _uiState.update {
+                it.copy(
+                    productUiModel = toProductUiModel(product),
+                )
+            }
+        }
+    }
+
+    fun decrease() {
+        viewModelScope.launch {
+            cartRepository.decrease(product.id)
+            cartRefresh()
+            _uiState.update {
+                it.copy(
+                    productUiModel = toProductUiModel(product),
+                )
+            }
+        }
     }
 
     companion object {
