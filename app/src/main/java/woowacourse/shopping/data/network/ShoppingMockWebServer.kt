@@ -1,5 +1,6 @@
 package woowacourse.shopping.data.network
 
+import android.R.attr.name
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.mockwebserver.Dispatcher
@@ -7,11 +8,11 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import woowacourse.shopping.constants.MockData
+import woowacourse.shopping.data.ProductDto
 import woowacourse.shopping.domain.Product
 
 fun startMockWebServer(): MockWebServer {
     val mockWebServer = MockWebServer()
-    mockWebServer.url("/")
 
     val dispatcher = object : Dispatcher() {
         override fun dispatch(request: RecordedRequest): MockResponse {
@@ -23,10 +24,18 @@ fun startMockWebServer(): MockWebServer {
                         ?: 0
                     val pageSize = url.queryParameter("pageSize")?.toIntOrNull()
                         ?: 20
+                    val products = fetchProducts(startIndex, pageSize).map {
+                        ProductDto(
+                            id = it.id.toInt(),
+                            name = it.name,
+                            price = it.priceAmount(),
+                            imageUrl = it.imageUrl,
+                        )
+                    }
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
                         .setResponseCode(200)
-                        .setBody(Json.encodeToString(fetchProducts(startIndex, pageSize)))
+                        .setBody(Json.encodeToString(products))
                 }
 
                 else -> notFound()

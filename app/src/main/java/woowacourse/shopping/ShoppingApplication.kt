@@ -11,6 +11,7 @@ class ShoppingApplication : Application() {
             startMockWebServer()
             AppContainer.init(this)
         }.apply {
+            start()
             join()
         }
     }

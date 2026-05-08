@@ -1,5 +1,7 @@
 package woowacourse.shopping.data
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -14,7 +16,7 @@ class ProductRepositoryImpl(
     override suspend fun loadProducts(
         startIndex: Int,
         pageSize: Int,
-    ): List<Product> {
+    ): List<Product> = withContext(Dispatchers.IO) {
         val url = baseUrl.newBuilder()
             .addPathSegment("products")
             .addQueryParameter("startIndex", startIndex.toString())
@@ -26,7 +28,7 @@ class ProductRepositoryImpl(
             check(response.isSuccessful) { "products 요청 실패: ${response.code}" }
 
             val body = response.body?.string().orEmpty()
-            return json.decodeFromString<List<ProductDto>>(body)
+            json.decodeFromString<List<ProductDto>>(body)
                 .take(pageSize)
                 .map(ProductDto::toDomain)
         }

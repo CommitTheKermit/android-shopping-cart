@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +12,7 @@ import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
 import woowacourse.shopping.constants.MockData
 import woowacourse.shopping.data.CartRepository
+import woowacourse.shopping.data.ProductRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.domain.Product
@@ -27,6 +27,7 @@ data class ProductListUiState(
 
 class ProductListViewModel(
     private val cartRepository: CartRepository,
+    private val productRepository: ProductRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductListUiState())
@@ -82,12 +83,7 @@ class ProductListViewModel(
     }
 
     private suspend fun fetchProducts(pageSize: Int): List<Product> {
-        delay(1000) // 비동기 상황 가정
-
-        val current = _uiState.value.products
-        val toOffset = minOf(current.size + pageSize, MockData.MOCK_PRODUCTS.size)
-        val products = MockData.MOCK_PRODUCTS.subList(0, toOffset)
-        return products
+        return productRepository.loadProducts(uiState.value.products.size, pageSize)
     }
 
     fun toProductUiModel(product: Product): ProductUiModel {
@@ -123,7 +119,7 @@ class ProductListViewModel(
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                ProductListViewModel(AppContainer.cartRepository)
+                ProductListViewModel(AppContainer.cartRepository, AppContainer.productRepository)
             }
         }
     }
