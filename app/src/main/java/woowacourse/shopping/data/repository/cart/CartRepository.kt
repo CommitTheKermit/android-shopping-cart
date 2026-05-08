@@ -10,4 +10,8 @@ interface CartRepository {
     suspend fun loadCartSize(): Int
     suspend fun increase(product: Product)
     suspend fun decrease(productId: String)
+    suspend fun pagination(
+        startIndex: Int,
+        pageSize: Int,
+    ): List<CartContent>
 }

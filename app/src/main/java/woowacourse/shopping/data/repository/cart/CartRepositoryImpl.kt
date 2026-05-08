@@ -1,5 +1,6 @@
 package woowacourse.shopping.data.repository.cart
 
+import kotlin.collections.map
 import woowacourse.shopping.data.local.cart.CartDao
 import woowacourse.shopping.data.local.cart.CartItemEntity
 import woowacourse.shopping.domain.Cart
@@ -42,6 +43,13 @@ class CartRepositoryImpl(
         } else {
             cartDao.update(existing.copy(quantity = existing.quantity - 1))
         }
+    }
+
+    override suspend fun pagination(
+        startIndex: Int,
+        pageSize: Int,
+    ): List<CartContent> {
+        return cartDao.pagination(startIndex, pageSize).map { it.toCartContent() }
     }
 
     private fun CartItemEntity.toCartContent(): CartContent = CartContent(

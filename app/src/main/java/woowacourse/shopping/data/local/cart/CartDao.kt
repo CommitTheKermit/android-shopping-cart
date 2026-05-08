@@ -7,6 +7,12 @@ import androidx.room.Update
 
 @Dao
 interface CartDao {
+    @Query("SELECT * FROM cart_items  LIMIT :pageSize OFFSET :startIndex")
+    suspend fun pagination(
+        startIndex: Int,
+        pageSize: Int,
+    ): List<CartItemEntity>
+
     @Query("SELECT * FROM cart_items")
     suspend fun findAll(): List<CartItemEntity>
 
