@@ -14,4 +14,5 @@ interface CartRepository {
         startIndex: Int,
         pageSize: Int,
     ): List<CartContent>
+    suspend fun remove(productId: String)
 }

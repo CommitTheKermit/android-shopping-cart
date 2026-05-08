@@ -52,6 +52,10 @@ class CartRepositoryImpl(
         return cartDao.pagination(startIndex, pageSize).map { it.toCartContent() }
     }
 
+    override suspend fun remove(productId: String) {
+        cartDao.deleteById(productId)
+    }
+
     private fun CartItemEntity.toCartContent(): CartContent = CartContent(
         product = Product(
             name = name,
