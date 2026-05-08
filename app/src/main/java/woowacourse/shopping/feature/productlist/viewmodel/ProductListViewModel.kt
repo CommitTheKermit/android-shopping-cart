@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlin.collections.map
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,19 +16,14 @@ import woowacourse.shopping.constants.MockData
 import woowacourse.shopping.data.CartRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
+import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductUiModel
 
-data class ProductListUiState(
-    val cartContents: List<CartContent> = emptyList(),
-    val uiModels: List<ProductUiModel> = emptyList(),
-    val isLoading: Boolean = false,
-    val isEnd: Boolean = false,
-)
+data class ProductListUiState(val products: List<Product> = emptyList(), val isLoading: Boolean = false, val isEnd: Boolean = false)
 
 class ProductListViewModel(private val cartRepository: CartRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductListUiState())
-
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
 
     fun loadingFetch() {
@@ -36,8 +32,7 @@ class ProductListViewModel(private val cartRepository: CartRepository) : ViewMod
             val result = fetchProducts(20)
             _uiState.update {
                 it.copy(
-                    cartContents = result,
-                    uiModels = result.map(::toProductUiModel),
+                    products = result,
                     isLoading = false,
                     isEnd = result.size >= MockData.MOCK_PRODUCTS.size,
                 )
@@ -46,7 +41,7 @@ class ProductListViewModel(private val cartRepository: CartRepository) : ViewMod
     }
 
     fun increase(productId: String) {
-        val cartContent = _uiState.value.cartContents.firstOrNull { it.productId == productId }
+        val cartContent = _uiState.value.products.firstOrNull { it.id == productId }
         require(cartContent != null) { "존재하지 않는 상품입니다." }
 
         viewModelScope.launch {
@@ -55,26 +50,21 @@ class ProductListViewModel(private val cartRepository: CartRepository) : ViewMod
                 val updated = state.cartContents.map { content ->
                     if (content.productId == productId) content.addQuantity(1) else content
                 }
-                state.copy(cartContents = updated)
+                state.copy(products = updated)
             }
         }
     }
 
-    private suspend fun fetchProducts(pageSize: Int): List<CartContent> {
+    private suspend fun fetchProducts(pageSize: Int): List<Product> {
         delay(1000) // 비동기 상황 가정
 
-        val current = _uiState.value.cartContents
+        val current = _uiState.value.products
         val toOffset = minOf(current.size + pageSize, MockData.MOCK_PRODUCTS.size)
-        val cartItems = MockData.MOCK_PRODUCTS.subList(0, toOffset).map {
-            CartContent(
-                product = it,
-                quantity = 0,
-            )
-        }
-        return cartItems
+        val products = MockData.MOCK_PRODUCTS.subList(0, toOffset)
+        return products
     }
 
-    private fun toProductUiModel(cartContent: CartContent): ProductUiModel {
+    fun toProductUiModel(cartContent: CartContent): ProductUiModel {
         val product = cartContent.product
         return ProductUiModel.of(
             name = product.name,

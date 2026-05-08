@@ -25,6 +25,7 @@ fun ProductListScreen(
     onCartIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    vm.loadingFetch()
     val state by vm.uiState.collectAsStateWithLifecycle()
     Scaffold(
         containerColor = Color.White,
@@ -44,7 +45,7 @@ fun ProductListScreen(
                     .weight(1f),
             ) {
                 ProductList(
-                    products = state.uiModels,
+                    products = state.cartContents.map(vm::toProductUiModel),
                     onProductClick = onProductClick,
                     onLoading = vm::loadingFetch,
                     onIncrease = {},
