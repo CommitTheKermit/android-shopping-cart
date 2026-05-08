@@ -17,13 +17,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         AppContainer.init(applicationContext)
 
-        val toProductDetailIntent = Intent(this, ProductDetailActivity::class.java)
         val toCartIntent = Intent(this, CartActivity::class.java)
 
         setContent {
             AndroidshoppingTheme {
                 ProductListScreen(
                     onProductClick = {
+                        val toProductDetailIntent = ProductDetailActivity.newIntent(
+                            context = this,
+                            uiModel = it,
+                        )
                         startActivity(toProductDetailIntent)
                     },
                     onCartIconClick = {
