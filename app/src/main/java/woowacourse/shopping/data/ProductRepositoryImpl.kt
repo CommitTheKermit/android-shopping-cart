@@ -1,0 +1,30 @@
+package woowacourse.shopping.data
+
+import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import woowacourse.shopping.domain.Product
+
+class ProductRepositoryImpl(
+    private val client: OkHttpClient,
+    private val baseUrl: HttpUrl,
+    private val json: Json,
+) : ProductRepository {
+    override suspend fun loadProducts(
+        startIndex: Int,
+        pageSize: Int,
+    ): List<Product> {
+        val url = baseUrl.newBuilder().addPathSegment("products").build()
+        val request = Request.Builder().url(url).get().build()
+
+        client.newCall(request).execute().use { response ->
+            check(response.isSuccessful) { "products 요청 실패: ${response.code}" }
+
+            val body = response.body?.string().orEmpty()
+            return json.decodeFromString<List<ProductDto>>(body)
+                .take(pageSize)
+                .map(ProductDto::toDomain)
+        }
+    }
+}
