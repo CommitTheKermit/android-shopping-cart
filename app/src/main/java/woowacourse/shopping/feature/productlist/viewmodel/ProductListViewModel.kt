@@ -31,6 +31,10 @@ class ProductListViewModel(
 
     private val _uiState = MutableStateFlow(ProductListUiState())
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
+    fun initialLoading() {
+        cartRefresh()
+        loadingFetch()
+    }
 
     fun loadingFetch() {
         viewModelScope.launch {

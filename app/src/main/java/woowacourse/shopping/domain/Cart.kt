@@ -49,6 +49,10 @@ class Cart(
 
     fun cartContentsSizeOf(): Int = cartContents.size
 
+    fun totalQuantityOf(): Int = cartContents.sumOf {
+        it.quantity
+    }
+
     fun contains(product: Product): Boolean = cartContents.any { it.hasProductId(product.id) }
 
     fun retainOnly(ids: List<String>): Cart {
