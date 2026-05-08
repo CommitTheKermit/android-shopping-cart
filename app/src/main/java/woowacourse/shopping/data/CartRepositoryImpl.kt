@@ -7,11 +7,18 @@ import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.domain.Money
 import woowacourse.shopping.domain.Product
 
-class CartRepositoryImpl(private val cartDao: CartDao) : CartRepository {
+class CartRepositoryImpl(
+    private val cartDao: CartDao,
+) : CartRepository {
 
     override suspend fun loadCart(): Cart {
         val contents = cartDao.findAll().map { it.toCartContent() }
         return Cart(contents)
+    }
+
+    override suspend fun loadCartContents(): List<CartContent> {
+        val contents = cartDao.findAll().map { it.toCartContent() }
+        return contents
     }
 
     override suspend fun loadCartSize(): Int {
