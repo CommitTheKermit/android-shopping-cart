@@ -14,7 +14,6 @@ import woowacourse.shopping.constants.MockData
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Cart
-import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductUiModel
 
@@ -95,27 +94,6 @@ class ProductListViewModel(
             quantity = uiState.value.cart.quantityOf(product.id),
         )
     }
-
-    //
-    fun addToCart(cartContent: CartContent): Cart {
-//        return cart.plusCartContent(cartItem)
-        return Cart(
-            cartContents = emptyList(),
-        )
-    }
-
-    //
-    fun syncDeletedCartItems(ids: List<String>): Cart {
-//        return cart.retainOnly(ids)
-        return Cart(
-            cartContents = emptyList(),
-        )
-    }
-
-    //
-//    fun toProductUiModels(): List<ProductUiModel> {
-//        return cart.getProductList().map { toProductUiModel(it) }
-//    }
     companion object {
         val Factory = viewModelFactory {
             initializer {
