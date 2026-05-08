@@ -1,6 +1,7 @@
 package woowacourse.shopping.feature.cart.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,20 +28,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import woowacourse.shopping.feature.cart.CartViewModel
 import woowacourse.shopping.feature.common.state.ProductUiModel
+import woowacourse.shopping.feature.productlist.LoadingIndicator
 
 @Composable
 fun CartScreen(
-    cartContents: List<ProductUiModel>,
     onCloseClick: () -> Unit,
-    onDelete: (String) -> Unit,
-    page: Int,
-    onLeftClick: () -> Unit,
-    onRightClick: () -> Unit,
     modifier: Modifier = Modifier,
-    canMoveToPreviousPage: Boolean,
-    canMoveToNextPage: Boolean,
+    viewModel: CartViewModel = viewModel(factory = CartViewModel.Factory),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.initialLoading()
+    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = Color.White,
@@ -48,26 +53,31 @@ fun CartScreen(
             CartAppBar(onCloseClick = onCloseClick)
         },
     ) { innerPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(innerPadding),
-        ) {
-            CartItemList(
-                cartContents,
-                modifier = Modifier.weight(1f),
-                onDelete = onDelete,
-            )
-            Spacer(modifier = Modifier.height(40.dp))
-            PageNavigator(
-                page = page,
-                onLeftClick = onLeftClick,
-                onRightClick = onRightClick,
-                canMoveToPreviousPage = canMoveToPreviousPage,
-                canMoveToNextPage = canMoveToNextPage,
-            )
-            Spacer(modifier = Modifier.height(40.dp))
+        Box {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding),
+            ) {
+                CartItemList(
+                    uiState.cartContents,
+                    modifier = Modifier.weight(1f),
+                    onDelete = viewModel::deleteCartItem,
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+                PageNavigator(
+                    page = uiState.page,
+                    onLeftClick = viewModel::moveToPreviousPage,
+                    onRightClick = viewModel::moveToNextPage,
+                    canMoveToPreviousPage = viewModel.isStartPage(),
+                    canMoveToNextPage = viewModel.isEndPage(),
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+            }
+            if (uiState.isLoading) {
+                LoadingIndicator()
+            }
         }
     }
 }
@@ -166,13 +176,6 @@ private fun CartItemList(
 @Composable
 private fun CartScreenPreview() {
     CartScreen(
-        cartContents = emptyList(),
         onCloseClick = {},
-        onDelete = {},
-        page = 0,
-        onLeftClick = {},
-        onRightClick = {},
-        canMoveToPreviousPage = false,
-        canMoveToNextPage = true,
     )
 }

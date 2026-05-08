@@ -13,23 +13,9 @@ class CartActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val stateHolder = CartStateHolder(emptyList())
             AndroidshoppingTheme {
                 CartScreen(
-                    cartContents = stateHolder.cartContents,
                     onCloseClick = { finish() },
-                    onDelete = { id ->
-                        stateHolder.deleteCartItem(id)
-                    },
-                    canMoveToPreviousPage = stateHolder.isStartPage().not(),
-                    onLeftClick = {
-                        stateHolder.moveToPreviousPage()
-                    },
-                    canMoveToNextPage = stateHolder.isEndPage().not(),
-                    onRightClick = {
-                        stateHolder.moveToNextPage()
-                    },
-                    page = stateHolder.page,
                 )
             }
         }
