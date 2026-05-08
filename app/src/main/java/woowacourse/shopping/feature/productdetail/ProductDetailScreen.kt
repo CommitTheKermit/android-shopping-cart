@@ -1,4 +1,4 @@
-package woowacourse.shopping.feature.productlist
+package woowacourse.shopping.feature.productdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,10 +32,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import woowacourse.shopping.R
-import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.ProductQuantitySelector
-import woowacourse.shopping.feature.productdetail.ProductAppBar
+import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailViewModel
+import woowacourse.shopping.feature.productlist.LoadingIndicator
+import woowacourse.shopping.feature.productlist.PreviewableAsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,13 +54,13 @@ fun ProductDetailScreen(
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val product = uiState.product
+    val productUiModel = uiState.productUiModel
 
     when {
         uiState.isLoading -> LoadingIndicator()
-        product == null -> ProductDetailErrorScreen(onCloseClick)
+        productUiModel == null -> ProductDetailErrorScreen(onCloseClick)
         else -> ProductDetailContent(
-            product = product,
+            productUiModel = productUiModel,
             onCloseClick = onCloseClick,
             onAddToCartClick = onAddToCartClick,
             modifier = modifier,
@@ -69,7 +70,7 @@ fun ProductDetailScreen(
 
 @Composable
 fun ProductDetailContent(
-    product: Product,
+    productUiModel: ProductUiModel,
     onCloseClick: () -> Unit,
     onAddToCartClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -90,14 +91,14 @@ fun ProductDetailContent(
         ) {
             Column {
                 PreviewableAsyncImage(
-                    imageUrl = product.imageUrl,
-                    description = product.name,
+                    imageUrl = productUiModel.imageUrl,
+                    description = productUiModel.name,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f),
                 )
                 Text(
-                    text = product.name,
+                    text = productUiModel.name,
                     fontWeight = FontWeight.W700,
                     fontSize = 24.sp,
                     modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
@@ -110,12 +111,12 @@ fun ProductDetailContent(
                         .padding(vertical = 16.dp, horizontal = 18.dp),
                 ) {
                     Text(
-                        text = product.priceAmount().toString(),
+                        text = productUiModel.price,
                         fontWeight = FontWeight.W400,
                         fontSize = 20.sp,
                     )
                     ProductQuantitySelector(
-                        quantity = 0,
+                        quantity = productUiModel.quantity,
                         modifier = Modifier.size(width = 126.dp, height = 42.dp),
                     )
                 }

@@ -14,9 +14,10 @@ import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.Product
+import woowacourse.shopping.feature.common.state.ProductUiModel
 
 data class ProductDetailUiState(
-    val product: Product? = null,
+    val productUiModel: ProductUiModel? = null,
     val cart: Cart = Cart(emptyList()),
     val isLoading: Boolean = false,
 )
@@ -39,7 +40,7 @@ class ProductDetailViewModel(
             val product = productRepository.getProduct(productId)
             _uiState.update {
                 it.copy(
-                    product = product,
+                    productUiModel = toProductUiModel(product),
                     isLoading = false,
                 )
             }
@@ -55,6 +56,16 @@ class ProductDetailViewModel(
                 )
             }
         }
+    }
+
+    fun toProductUiModel(product: Product): ProductUiModel {
+        return ProductUiModel.of(
+            name = product.name,
+            price = product.priceAmount(),
+            imageUrl = product.imageUrl,
+            id = product.id,
+            quantity = uiState.value.cart.quantityOf(product.id),
+        )
     }
 
     companion object {

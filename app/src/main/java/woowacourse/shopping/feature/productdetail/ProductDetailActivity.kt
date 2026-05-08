@@ -10,8 +10,6 @@ import androidx.core.content.IntentCompat
 import kotlin.jvm.java
 import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productdetail.ui.theme.AndroidshoppingcartTheme
-import woowacourse.shopping.feature.productlist.ProductDetailErrorScreen
-import woowacourse.shopping.feature.productlist.ProductDetailScreen
 
 class ProductDetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
