@@ -7,4 +7,6 @@ interface ProductRepository {
         startIndex: Int,
         pageSize: Int,
     ): List<Product>
+
+    suspend fun getProduct(id: String): Product
 }

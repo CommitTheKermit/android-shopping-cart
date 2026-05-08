@@ -14,6 +14,7 @@ class ProductRepositoryImpl(
     private val baseUrl: HttpUrl,
     private val json: Json,
 ) : ProductRepository {
+
     override suspend fun loadProducts(
         startIndex: Int,
         pageSize: Int,
@@ -30,8 +31,22 @@ class ProductRepositoryImpl(
 
             val body = response.body?.string().orEmpty()
             json.decodeFromString<List<ProductDto>>(body)
-                .take(pageSize)
                 .map(ProductDto::toDomain)
+        }
+    }
+
+    override suspend fun getProduct(id: String): Product = withContext(Dispatchers.IO) {
+        val url = baseUrl.newBuilder()
+            .addPathSegment("product")
+            .addQueryParameter("id", id)
+            .build()
+        val request = Request.Builder().url(url).build()
+
+        client.newCall(request).execute().use { response ->
+            check(response.isSuccessful) { "products 요청 실패: ${response.code}" }
+
+            val body = response.body?.string().orEmpty()
+            json.decodeFromString<ProductDto>(body).toDomain()
         }
     }
 }
