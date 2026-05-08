@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productlist.viewmodel.ProductListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +34,10 @@ fun ProductListScreen(
         containerColor = Color.White,
         modifier = modifier.fillMaxSize(),
         topBar = {
-            ProductListAppBar(onCartIconClick = onCartIconClick, cartQuantities = 0)
+            ProductListAppBar(
+                onCartIconClick = onCartIconClick,
+                cartQuantities = state.cart.totalQuantityOf(),
+            )
         },
     ) { innerPadding ->
         Column(
