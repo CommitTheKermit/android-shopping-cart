@@ -1,4 +1,4 @@
-package woowacourse.shopping.feature.cart.stateholder
+package woowacourse.shopping.feature.cart
 
 import android.os.Bundle
 import androidx.compose.runtime.getValue
@@ -77,7 +77,11 @@ class CartStateHolder(
                 }
             },
             restore = { bundle ->
-                val items: List<ProductUiModel> = BundleCompat.getParcelableArrayList(bundle, KEY_ITEMS, ProductUiModel::class.java)
+                val items: List<ProductUiModel> = BundleCompat.getParcelableArrayList(
+                    bundle,
+                    KEY_ITEMS,
+                    ProductUiModel::class.java,
+                )
                     ?: emptyList()
 
                 val page = bundle.getInt(KEY_PAGE, 1)

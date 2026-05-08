@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.content.IntentCompat
 import kotlin.jvm.java
 import woowacourse.shopping.feature.common.state.ProductUiModel
-import woowacourse.shopping.feature.productdetail.ui.theme.AndroidshoppingcartTheme
+import woowacourse.shopping.feature.productlist.ui.theme.AndroidshoppingTheme
 
 class ProductDetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +19,7 @@ class ProductDetailActivity : ComponentActivity() {
         val uiModel = IntentCompat.getParcelableExtra(intent, DETAIL_PRODUCT, ProductUiModel::class.java)
 
         setContent {
-            AndroidshoppingcartTheme {
+            AndroidshoppingTheme {
                 if (uiModel == null) {
                     ProductDetailErrorScreen(onCloseClick = { finish() })
                 } else {
