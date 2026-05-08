@@ -88,18 +88,10 @@ class CartViewModel(
         val toIndex = minOf(page * pageSize, uiState.value.cartSize)
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val cartContents = cartRepository.pagination(toIndex, pageSize).map(::toProductUiModel)
+            cartRepository.remove(id)
+            val cartContents = pagination(uiState.value.page)
             _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
         }
-    }
-
-    fun deleteCartItem(id: String) {
-//        totalCartContents = totalCartContents.filter { it.id != id }
-//        cartContents = pagination(
-//            page = page,
-//            productUiModels = totalCartContents,
-//            pageSize = 5,
-//        )
     }
 
     fun toProductUiModel(cartContent: CartContent): ProductUiModel {
