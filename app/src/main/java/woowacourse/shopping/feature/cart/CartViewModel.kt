@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
+import woowacourse.shopping.AppContainer.cartRepository
 import woowacourse.shopping.data.repository.cart.CartRepository
-import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.feature.common.state.ProductUiModel
@@ -30,35 +30,34 @@ data class CartUiState(
 class CartViewModel(
     private val initialPageSize: Int = 5,
     private val cartRepository: CartRepository,
-    private val productRepository: ProductRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CartUiState())
     val uiState: StateFlow<CartUiState> = _uiState.asStateFlow()
 
     fun initialLoading() {
-        getCartSize()
-        pagination(
-            page = 1,
-        )
-    }
-
-    fun getCartSize() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val cartSize = cartRepository.loadCartSize()
-            _uiState.update { it.copy(isLoading = false, cartSize = cartSize) }
+            val cartSize = getCartSize()
+            _uiState.update { it.copy(cartSize = cartSize) }
+            val cartContents = pagination(
+                page = 1,
+            )
+            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
         }
     }
 
-    fun isStartPage(): Boolean {
-        return uiState.value.page == 1
+    private suspend fun getCartSize(): Int {
+        val cartSize = cartRepository.loadCartSize()
+        return cartSize
     }
+
+    fun isStartPage(): Boolean = uiState.value.page == 1
 
     fun isEndPage(): Boolean = uiState.value.page >= lastPage(initialPageSize)
 
     private fun lastPage(pageSize: Int): Int {
-        if (uiState.value.cart.getProductList().isEmpty()) return 1
-        return (uiState.value.cart.getProductList().size + pageSize - 1) / pageSize
+        if (uiState.value.cartSize == 0) return 1
+        return (uiState.value.cartSize) / pageSize
     }
 
     fun moveToPreviousPage() {
@@ -68,7 +67,11 @@ class CartViewModel(
                 page = page,
             )
         }
-        pagination(page)
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val cartContents = pagination(page)
+            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
+        }
     }
 
     fun moveToNextPage() {
@@ -78,14 +81,25 @@ class CartViewModel(
                 page = page,
             )
         }
-        pagination(page)
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val cartContents = pagination(page)
+            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
+        }
     }
 
-    private fun pagination(
+    private suspend fun pagination(
         page: Int,
-        pageSize: Int = 20,
-    ) {
+        pageSize: Int = 5,
+    ): List<ProductUiModel> {
         val toIndex = minOf(page * pageSize, uiState.value.cartSize)
+        val startIndex = (page - 1) * pageSize
+
+        val cartContents = cartRepository.pagination(startIndex, toIndex).map(::toProductUiModel)
+        return cartContents
+    }
+
+    fun deleteCartItem(id: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             cartRepository.remove(id)
@@ -108,7 +122,7 @@ class CartViewModel(
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                CartViewModel(5, AppContainer.cartRepository, AppContainer.productRepository)
+                CartViewModel(5, AppContainer.cartRepository)
             }
         }
     }
