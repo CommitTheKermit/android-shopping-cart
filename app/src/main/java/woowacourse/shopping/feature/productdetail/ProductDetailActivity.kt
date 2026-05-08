@@ -26,12 +26,9 @@ class ProductDetailActivity : ComponentActivity() {
                     ProductDetailErrorScreen(onCloseClick = { finish() })
                 } else {
                     ProductDetailScreen(
-                        imageUrl = uiModel.imageUrl,
-                        name = uiModel.name,
-                        price = uiModel.price,
+                        id = uiModel.id,
                         onCloseClick = { finish() },
                         onAddToCartClick = {
-                            setResult(RESULT_OK, addedIdResult(uiModel.id))
                             finish()
                         },
                     )
@@ -42,16 +39,11 @@ class ProductDetailActivity : ComponentActivity() {
 
     companion object {
         private const val DETAIL_PRODUCT = "product_id"
-        private const val EXTRA_ADDED_ID = "added_to_cart_id"
 
         fun newIntent(
             context: Context,
             uiModel: ProductUiModel,
         ): Intent = Intent(context, ProductDetailActivity::class.java)
             .putExtra(DETAIL_PRODUCT, uiModel)
-
-        fun getAddedId(intent: Intent?): String? = intent?.getStringExtra(EXTRA_ADDED_ID)
-
-        private fun addedIdResult(productId: String?): Intent = Intent().putExtra(EXTRA_ADDED_ID, productId)
     }
 }
