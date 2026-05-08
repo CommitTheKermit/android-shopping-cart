@@ -70,8 +70,8 @@ fun CartScreen(
                     page = uiState.page,
                     onLeftClick = viewModel::moveToPreviousPage,
                     onRightClick = viewModel::moveToNextPage,
-                    canMoveToPreviousPage = viewModel.isStartPage(),
-                    canMoveToNextPage = viewModel.isEndPage(),
+                    canMoveToPreviousPage = !viewModel.isStartPage(),
+                    canMoveToNextPage = !viewModel.isEndPage(),
                 )
                 Spacer(modifier = Modifier.height(40.dp))
             }
