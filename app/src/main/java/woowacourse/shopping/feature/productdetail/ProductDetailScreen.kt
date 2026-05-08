@@ -44,7 +44,7 @@ fun ProductDetailScreen(
     onCloseClick: () -> Unit,
     onAddToCartClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ProductDetailViewModel = viewModel(),
+    viewModel: ProductDetailViewModel = viewModel(factory = ProductDetailViewModel.Factory),
 ) {
     LaunchedEffect(Unit) {
         viewModel.initialLoading(

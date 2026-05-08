@@ -2,11 +2,14 @@ package woowacourse.shopping.feature.productdetail.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import woowacourse.shopping.AppContainer
 import woowacourse.shopping.data.CartRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.Product
@@ -48,6 +51,14 @@ class ProductDetailViewModel(
                 it.copy(
                     cart = cart,
                 )
+            }
+        }
+    }
+
+    companion object {
+        val Factory = viewModelFactory {
+            initializer {
+                ProductDetailViewModel(AppContainer.cartRepository)
             }
         }
     }
