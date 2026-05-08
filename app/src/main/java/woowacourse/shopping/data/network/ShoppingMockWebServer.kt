@@ -7,54 +7,46 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import woowacourse.shopping.constants.MockData
-import woowacourse.shopping.data.ProductDto
+import woowacourse.shopping.domain.Product
 
-private fun startMockWebServer() {
+fun startMockWebServer(): MockWebServer {
     val mockWebServer = MockWebServer()
     mockWebServer.url("/")
-    val products = MockData.MOCK_PRODUCTS
 
     val dispatcher = object : Dispatcher() {
         override fun dispatch(request: RecordedRequest): MockResponse {
-            return when (request.path) {
+            val url = request.requestUrl
+                ?: return notFound()
+            return when (url.encodedPath) {
                 "/products" -> {
+                    val startIndex = url.queryParameter("startIndex")?.toIntOrNull()
+                        ?: 0
+                    val pageSize = url.queryParameter("pageSize")?.toIntOrNull()
+                        ?: 20
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
                         .setResponseCode(200)
-                        .setBody(
-                            Json.encodeToString(
-                                products.map {
-                                    ProductDto(
-                                        id = it.id.toInt(),
-                                        name = it.name,
-                                        price = it.priceAmount(),
-                                        imageUrl = it.imageUrl,
-                                    )
-                                },
-                            ),
-                        )
+                        .setBody(Json.encodeToString(fetchProducts(startIndex, pageSize)))
                 }
 
-//                "/products/1" -> {
-//                    MockResponse()
-//                        .setHeader("Content-Type", "application/json")
-//                        .setResponseCode(200)
-//                        .setBody(product)
-//                }
-//
-//                "/cart-items" -> {
-//                    MockResponse()
-//                        .setHeader("Content-Type", "application/json")
-//                        .setResponseCode(200)
-//                        .setBody(cartItems)
-//                }
-
-                else -> {
-                    MockResponse().setResponseCode(404)
-                }
+                else -> notFound()
             }
         }
     }
 
     mockWebServer.dispatcher = dispatcher
+    mockWebServer.start(12345)
+
+    return mockWebServer
 }
+
+private fun fetchProducts(
+    startIndex: Int,
+    pageSize: Int,
+): List<Product> {
+    val toOffset = minOf(startIndex + pageSize, MockData.MOCK_PRODUCTS.size)
+    val products = MockData.MOCK_PRODUCTS.subList(0, toOffset)
+    return products
+}
+
+private fun notFound(): MockResponse = MockResponse().setResponseCode(404)
