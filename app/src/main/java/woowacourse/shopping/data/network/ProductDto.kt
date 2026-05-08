@@ -1,4 +1,4 @@
-package woowacourse.shopping.data
+package woowacourse.shopping.data.network
 
 import kotlinx.serialization.Serializable
 import woowacourse.shopping.domain.Money

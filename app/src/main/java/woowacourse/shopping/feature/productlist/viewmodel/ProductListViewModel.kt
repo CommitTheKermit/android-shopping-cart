@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
 import woowacourse.shopping.constants.MockData
-import woowacourse.shopping.data.CartRepository
-import woowacourse.shopping.data.ProductRepository
+import woowacourse.shopping.data.repository.cart.CartRepository
+import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.domain.Product

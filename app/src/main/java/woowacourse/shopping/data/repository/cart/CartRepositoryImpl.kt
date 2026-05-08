@@ -1,4 +1,4 @@
-package woowacourse.shopping.data
+package woowacourse.shopping.data.repository.cart
 
 import woowacourse.shopping.data.local.cart.CartDao
 import woowacourse.shopping.data.local.cart.CartItemEntity

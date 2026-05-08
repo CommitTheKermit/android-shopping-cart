@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
-import woowacourse.shopping.data.CartRepository
+import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.Product
 

@@ -8,7 +8,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import woowacourse.shopping.constants.MockData
-import woowacourse.shopping.data.ProductDto
+import woowacourse.shopping.data.network.ProductDto
 import woowacourse.shopping.domain.Product
 
 fun startMockWebServer(): MockWebServer {
