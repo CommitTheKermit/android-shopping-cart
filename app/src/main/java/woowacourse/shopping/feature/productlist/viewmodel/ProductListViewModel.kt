@@ -43,7 +43,7 @@ class ProductListViewModel(
             val result = fetchProducts(20)
             _uiState.update {
                 it.copy(
-                    products = result,
+                    products = _uiState.value.products + result,
                     isLoading = false,
                     isEnd = result.size >= MockData.MOCK_PRODUCTS.size,
                 )
