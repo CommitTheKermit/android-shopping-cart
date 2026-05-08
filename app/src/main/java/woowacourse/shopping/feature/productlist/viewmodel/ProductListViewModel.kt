@@ -19,9 +19,16 @@ import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductUiModel
 
-data class ProductListUiState(val products: List<Product> = emptyList(), val isLoading: Boolean = false, val isEnd: Boolean = false)
+data class ProductListUiState(
+    val products: List<Product> = emptyList(),
+    val cart: Cart = Cart(emptyList()),
+    val isLoading: Boolean = false,
+    val isEnd: Boolean = false,
+)
 
-class ProductListViewModel(private val cartRepository: CartRepository) : ViewModel() {
+class ProductListViewModel(
+    private val cartRepository: CartRepository,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductListUiState())
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()

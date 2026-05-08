@@ -9,7 +9,11 @@ import androidx.compose.runtime.setValue
 import androidx.core.os.BundleCompat
 import woowacourse.shopping.feature.common.state.ProductUiModel
 
-class CartStateHolder(initialItems: List<ProductUiModel>, initialPage: Int = 1, private val initialPageSize: Int = 5) {
+class CartStateHolder(
+    initialItems: List<ProductUiModel>,
+    initialPage: Int = 1,
+    private val initialPageSize: Int = 5,
+) {
     var totalCartContents: List<ProductUiModel> = initialItems.toList()
     var page by mutableIntStateOf(initialPage)
     var cartContents by mutableStateOf(

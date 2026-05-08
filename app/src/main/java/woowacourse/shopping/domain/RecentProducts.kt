@@ -1,5 +1,7 @@
 package woowacourse.shopping.domain
-class RecentProducts(private val products: List<Product>) {
+class RecentProducts(
+    private val products: List<Product>,
+) {
     fun addProduct(newProduct: Product): RecentProducts {
         var newProducts = products
         if (newProducts.size >= 10) {

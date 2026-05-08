@@ -1,6 +1,8 @@
 package woowacourse.shopping.domain
 
-class Cart(private val cartContents: List<CartContent>) {
+class Cart(
+    private val cartContents: List<CartContent>,
+) {
     fun plusCartContent(newCartContent: CartContent): Cart {
         val duplicateCartItem = cartContents.firstOrNull { cartContent ->
             cartContent.hasProductId(newCartContent.productId)
