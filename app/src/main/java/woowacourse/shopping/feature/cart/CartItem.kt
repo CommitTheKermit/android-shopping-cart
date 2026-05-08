@@ -83,6 +83,7 @@ fun CartItem(
             )
             Column(horizontalAlignment = Alignment.End) {
                 ProductQuantitySelector(
+                    quantity = 0,
                     modifier = Modifier
                         .padding(end = 5.dp)
                         .size(width = 126.dp, height = 42.dp),

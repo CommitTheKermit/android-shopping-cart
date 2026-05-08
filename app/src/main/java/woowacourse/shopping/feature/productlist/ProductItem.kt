@@ -35,6 +35,7 @@ fun ProductItem(
     imageUrl: String,
     name: String,
     price: String,
+    quantity: Int,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
@@ -48,6 +49,9 @@ fun ProductItem(
             )
 //            ProductInitialAddButton(modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 4.dp, end = 4.dp))
             ProductQuantitySelector(
+                quantity = quantity,
+                onIncrease = onIncrease,
+                onDecrease = onDecrease,
                 modifier = Modifier
                     .height(42.dp)
                     .fillMaxWidth()
@@ -84,6 +88,7 @@ private fun PreviewProduct() {
         price = "12,000원",
         onIncrease = {},
         onDecrease = {},
+        quantity = 3,
         modifier = Modifier
             .width(160.dp)
             .padding(horizontal = 16.dp),

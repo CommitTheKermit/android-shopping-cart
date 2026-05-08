@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlin.collections.map
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,16 +47,32 @@ class ProductListViewModel(
     }
 
     fun increase(productId: String) {
-        val cartContent = _uiState.value.products.firstOrNull { it.id == productId }
-        require(cartContent != null) { "존재하지 않는 상품입니다." }
+        val product = _uiState.value.products.firstOrNull { it.id == productId }
+        require(product != null) { "존재하지 않는 상품입니다." }
 
         viewModelScope.launch {
-            cartRepository.increase(cartContent.product)
-            _uiState.update { state ->
-                val updated = state.cartContents.map { content ->
-                    if (content.productId == productId) content.addQuantity(1) else content
-                }
-                state.copy(products = updated)
+            cartRepository.increase(product)
+            cartRefresh()
+        }
+    }
+
+    fun decrease(productId: String) {
+        val product = _uiState.value.products.firstOrNull { it.id == productId }
+        require(product != null) { "존재하지 않는 상품입니다." }
+
+        viewModelScope.launch {
+            cartRepository.decrease(productId)
+            cartRefresh()
+        }
+    }
+
+    fun cartRefresh() {
+        viewModelScope.launch {
+            val cart = cartRepository.loadCart()
+            _uiState.update {
+                it.copy(
+                    cart = cart,
+                )
             }
         }
     }
@@ -71,13 +86,13 @@ class ProductListViewModel(
         return products
     }
 
-    fun toProductUiModel(cartContent: CartContent): ProductUiModel {
-        val product = cartContent.product
+    fun toProductUiModel(product: Product): ProductUiModel {
         return ProductUiModel.of(
             name = product.name,
             price = product.priceAmount(),
             imageUrl = product.imageUrl,
             id = product.id,
+            quantity = uiState.value.cart.quantityOf(product.id),
         )
     }
 

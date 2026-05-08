@@ -1,6 +1,7 @@
 package woowacourse.shopping.feature.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -16,14 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.shopping.R
 
 @Composable
-@Preview
-fun ProductQuantitySelector(modifier: Modifier = Modifier) {
+fun ProductQuantitySelector(
+    quantity: Int,
+    onIncrease: () -> Unit = {},
+    onDecrease: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
@@ -34,14 +38,18 @@ fun ProductQuantitySelector(modifier: Modifier = Modifier) {
         Icon(
             imageVector = Icons.Default.Remove,
             contentDescription = stringResource(R.string.decrease_product_description),
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier
+                .size(20.dp)
+                .clickable(onClick = onDecrease),
             tint = Color(0xff555555),
         )
-        Text("2", fontSize = 22.sp, color = Color(0xff555555))
+        Text(quantity.toString(), fontSize = 22.sp, color = Color(0xff555555))
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = stringResource(R.string.add_product_description),
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier
+                .size(20.dp)
+                .clickable(onClick = onIncrease),
             tint = Color(0xff555555),
         )
     }

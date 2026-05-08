@@ -45,11 +45,11 @@ fun ProductListScreen(
                     .weight(1f),
             ) {
                 ProductList(
-                    products = state.cartContents.map(vm::toProductUiModel),
+                    products = state.products.map(vm::toProductUiModel),
                     onProductClick = onProductClick,
                     onLoading = vm::loadingFetch,
-                    onIncrease = {},
-                    onDecrease = {},
+                    onIncrease = vm::increase,
+                    onDecrease = vm::decrease,
                     isEnd = state.isEnd,
                 )
                 if (state.isLoading) {

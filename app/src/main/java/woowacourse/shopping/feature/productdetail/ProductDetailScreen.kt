@@ -82,6 +82,7 @@ fun ProductDetailScreen(
                         fontSize = 20.sp,
                     )
                     ProductQuantitySelector(
+                        quantity = 0,
                         modifier = Modifier.size(width = 126.dp, height = 42.dp),
                     )
                 }

@@ -28,8 +28,8 @@ fun ProductList(
     products: List<ProductUiModel>,
     onProductClick: (ProductUiModel) -> Unit,
     onLoading: () -> Unit,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit,
+    onIncrease: (String) -> Unit,
+    onDecrease: (String) -> Unit,
     modifier: Modifier = Modifier,
     isEnd: Boolean,
 ) {
@@ -48,8 +48,9 @@ fun ProductList(
                 imageUrl = it.imageUrl,
                 name = it.name,
                 price = it.price,
-                onIncrease = onIncrease,
-                onDecrease = onDecrease,
+                quantity = it.quantity,
+                onIncrease = { onIncrease(it.id) },
+                onDecrease = { onDecrease(it.id) },
                 modifier = Modifier.clickable(
                     onClick = {
                         onProductClick(it)
