@@ -43,9 +43,8 @@ class Cart(
         val cartItem = cartContents.firstOrNull { cartContent ->
             cartContent.hasProductId(productId)
         }
-        require(cartItem != null) { "존재하지 않는 상품입니다." }
-
-        return cartItem.quantity
+        return cartItem?.quantity
+            ?: 0
     }
 
     fun cartContentsSizeOf(): Int = cartContents.size
