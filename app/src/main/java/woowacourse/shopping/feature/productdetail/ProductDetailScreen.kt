@@ -46,6 +46,7 @@ import woowacourse.shopping.feature.productlist.PreviewableAsyncImage
 fun ProductDetailScreen(
     id: String,
     activityFinish: () -> Unit,
+    onClickRecentButton: (String) -> Unit,
     modifier: Modifier = Modifier,
     recentProductId: String? = null,
     viewModel: ProductDetailViewModel = viewModel(factory = ProductDetailViewModel.Factory),
@@ -53,6 +54,7 @@ fun ProductDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.initialLoading(
             productId = id,
+            recentProductId = recentProductId,
         )
     }
 
@@ -64,6 +66,7 @@ fun ProductDetailScreen(
         productDetailUiModel == null -> ProductDetailErrorScreen(activityFinish)
         else -> ProductDetailContent(
             productDetailUiModel = productDetailUiModel,
+            recentProductDetailUiModel = uiState.recentProductDetailUiModel,
             quantity = uiState.quantity,
             activityFinish = activityFinish,
             increase = viewModel::increase,
@@ -72,6 +75,7 @@ fun ProductDetailScreen(
                 viewModel.addToCart()
                 activityFinish()
             },
+            onClickRecentButton = onClickRecentButton,
             modifier = modifier,
         )
     }
@@ -85,10 +89,10 @@ fun ProductDetailContent(
     increase: () -> Unit,
     decrease: () -> Unit,
     onAddCartButton: () -> Unit,
-    recentProductId: String? = null,
+    onClickRecentButton: (String) -> Unit,
+    recentProductDetailUiModel: ProductDetailUiModel? = null,
     modifier: Modifier = Modifier,
 ) {
-
     val priceFormatter = PriceFormatter(
         rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
         suffix = "원",
@@ -144,8 +148,14 @@ fun ProductDetailContent(
                         ),
                     )
                 }
-            }
-            if (recentProductId != null) {
+                if (recentProductDetailUiModel != null) {
+                    RecentProductLetter(
+                        productDetailUiModel = recentProductDetailUiModel,
+                        modifier = Modifier.padding(top = 30.dp),
+                        onClickRecentProduct = onClickRecentButton,
+
+                    )
+                }
             }
 
             CartPutButton(
@@ -232,6 +242,7 @@ private fun ProductScreenPreview() {
         increase = { },
         decrease = { },
         onAddCartButton = { },
+        onClickRecentButton = {},
     )
 }
 

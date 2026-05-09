@@ -6,9 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.content.IntentCompat
 import kotlin.jvm.java
-import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productlist.ui.theme.AndroidshoppingTheme
 
 class ProductDetailActivity : ComponentActivity() {
@@ -16,17 +14,23 @@ class ProductDetailActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val uiModel = IntentCompat.getParcelableExtra(intent, PRODUCT_ID, ProductUiModel::class.java)
+        val id = intent.getStringExtra(PRODUCT_ID)
         val recentProductId = intent.getStringExtra(RECENT_PRODUCT_ID)
 
         setContent {
             AndroidshoppingTheme {
-                if (uiModel == null) {
+                if (id == null) {
                     ProductDetailErrorScreen(onCloseClick = { finish() })
                 } else {
                     ProductDetailScreen(
-                        id = uiModel.id,
+                        id = id,
                         activityFinish = { finish() },
+                        recentProductId = recentProductId,
+                        onClickRecentButton = { id ->
+                            val intent = newIntent(this, id)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        },
                     )
                 }
             }

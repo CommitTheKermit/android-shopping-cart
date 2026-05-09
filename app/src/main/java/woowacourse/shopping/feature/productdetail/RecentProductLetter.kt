@@ -1,6 +1,7 @@
 package woowacourse.shopping.feature.productdetail
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,15 +23,16 @@ import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 @Composable
 fun RecentProductLetter(
     productDetailUiModel: ProductDetailUiModel,
+    onClickRecentProduct: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-//            .height(80.dp)
             .padding(18.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .border(1.dp, Color(0xffaaaaaa)),
+            .clip(RoundedCornerShape(8.dp))
+            .border(1.dp, Color(0xffaaaaaa), shape = RoundedCornerShape(8.dp))
+            .clickable(onClick = { onClickRecentProduct(productDetailUiModel.id) }),
     ) {
         Column(Modifier.padding(horizontal = 18.dp, vertical = 16.dp)) {
             Text(
@@ -61,5 +63,6 @@ fun RecentProductLetterPreview(modifier: Modifier = Modifier) {
             id = "",
             quantity = 0,
         ),
+        onClickRecentProduct = {},
     )
 }
