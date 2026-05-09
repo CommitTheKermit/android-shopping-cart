@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import woowacourse.shopping.AppContainer
 import woowacourse.shopping.feature.cart.CartActivity
 import woowacourse.shopping.feature.productdetail.ProductDetailActivity
 import woowacourse.shopping.feature.productlist.ProductListScreen
