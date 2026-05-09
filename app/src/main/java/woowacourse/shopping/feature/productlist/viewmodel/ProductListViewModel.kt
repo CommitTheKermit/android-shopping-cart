@@ -44,7 +44,7 @@ class ProductListViewModel(
     fun initialLoading() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            cart = refreshCart()
+            refreshCart()
             fetchAndAppendProducts(20)
             refreshRecentProducts()
             _uiState.update { it.copy(isLoading = false) }
@@ -64,7 +64,7 @@ class ProductListViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             cartRepository.increase(product)
-            cart = refreshCart()
+            refreshCart()
             _uiState.update { it.copy(isLoading = false) }
         }
     }
@@ -76,7 +76,7 @@ class ProductListViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             cartRepository.decrease(productId)
-            cart = refreshCart()
+            refreshCart()
             _uiState.update { it.copy(isLoading = false) }
         }
     }
@@ -105,11 +105,15 @@ class ProductListViewModel(
         }
     }
 
-    private suspend fun refreshCart(): Cart {
-        val newCart = cartRepository.loadCart()
+    private suspend fun refreshCart() {
+        cart = cartRepository.loadCart()
 
-        _uiState.update { it.copy(cartTotalQuantity = newCart.totalQuantityOf()) }
-        return newCart
+        _uiState.update {
+            it.copy(
+                cartTotalQuantity = cart.totalQuantityOf(),
+                productUiModels = products.map(::toProductUiModel),
+            )
+        }
     }
 
     private suspend fun fetchAndAppendProducts(pageSize: Int) {
@@ -127,6 +131,8 @@ class ProductListViewModel(
     private suspend fun refreshRecentProducts() {
         val recentProductIds = recentProductRepository.loadProducts()
         val recents = products.filter { it.id in recentProductIds }
+        if (recents.isEmpty()) return
+
         _uiState.update {
             it.copy(
                 recentProducts = recents.map(::toProductUiModel),

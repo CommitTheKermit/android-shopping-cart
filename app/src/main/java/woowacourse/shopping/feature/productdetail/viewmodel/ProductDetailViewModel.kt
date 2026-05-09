@@ -38,8 +38,9 @@ class ProductDetailViewModel(
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            product = getProduct(productId)
+            val newProduct = getProduct(productId)
 
+            product = newProduct
             if (recentProductId != null &&
                 productId != recentProductId
             ) {
