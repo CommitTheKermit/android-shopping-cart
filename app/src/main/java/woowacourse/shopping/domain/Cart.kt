@@ -54,17 +54,6 @@ class Cart(
     }
 
     fun contains(product: Product): Boolean = cartContents.any { it.hasProductId(product.id) }
-
-    fun retainOnly(ids: List<String>): Cart {
-        return Cart(
-            cartContents.filter { cartItem ->
-                ids.any {
-                    cartItem.hasProductId(it)
-                }
-            },
-        )
-    }
-
     fun getProductList(): List<Product> {
         return cartContents.map { it.product }
     }
