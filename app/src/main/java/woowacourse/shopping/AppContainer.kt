@@ -46,7 +46,7 @@ object AppContainer {
         val recentProductDatabase = Room.databaseBuilder(
             context.applicationContext,
             RecentProductDatabase::class.java,
-            "shopping.db",
+            "recent_product.db",
         ).build()
         _recentProductRepository = RecentProductRepositoryImpl(recentProductDatabase.recentProductDao())
 

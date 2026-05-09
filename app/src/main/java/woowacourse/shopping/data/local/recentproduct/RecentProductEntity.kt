@@ -7,4 +7,5 @@ import androidx.room.PrimaryKey
 data class RecentProductEntity(
     @PrimaryKey
     val productId: String,
+    val viewedAt: Long,
 )

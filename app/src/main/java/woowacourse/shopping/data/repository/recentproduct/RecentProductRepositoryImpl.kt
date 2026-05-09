@@ -8,14 +8,20 @@ class RecentProductRepositoryImpl(
     private val recentProductDao: RecentProductDao,
 ) : RecentProductRepository {
     override suspend fun loadProducts(): List<String> {
-        return recentProductDao.findAll()
+        return recentProductDao.findAll(MAX_SIZE)
     }
 
     override suspend fun insert(id: String) {
         recentProductDao.insert(
             RecentProductEntity(
                 productId = id,
+                viewedAt = System.currentTimeMillis(),
             ),
         )
+        recentProductDao.trim(MAX_SIZE)
+    }
+
+    companion object {
+        private const val MAX_SIZE = 10
     }
 }
