@@ -21,14 +21,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productlist.viewmodel.ProductListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
     vm: ProductListViewModel = viewModel(factory = ProductListViewModel.Factory),
-    onProductClick: (ProductUiModel) -> Unit,
+    onProductClick: (String, String?) -> Unit,
     onCartIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -75,7 +74,12 @@ fun ProductListScreen(
                             recentProducts = state.recentProducts,
                             onRecentProductClick = {
                                 vm.insertRecentProduct(it.id)
-                                onProductClick(it)
+                                onProductClick(
+                                    it.id,
+                                    if (state.recentProducts.isNotEmpty()) {
+                                        state.recentProducts.first().id
+                                    } else null,
+                                )
                             },
                             modifier = Modifier.padding(20.dp),
                         )
@@ -90,7 +94,12 @@ fun ProductListScreen(
                         products = state.products.map(vm::toProductUiModel),
                         onProductClick = {
                             vm.insertRecentProduct(it.id)
-                            onProductClick(it)
+                            onProductClick(
+                                it.id,
+                                if (state.recentProducts.isNotEmpty()) {
+                                    state.recentProducts.first().id
+                                } else null,
+                            )
                         },
                         onLoading = vm::loadingFetch,
                         onIncrease = vm::increase,
@@ -111,7 +120,7 @@ fun ProductListScreen(
 @Composable
 private fun PreviewProductListScreen() {
     ProductListScreen(
-        onProductClick = { },
+        onProductClick = { _, _ -> },
         onCartIconClick = { },
     )
 }

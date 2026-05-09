@@ -16,7 +16,8 @@ class ProductDetailActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val uiModel = IntentCompat.getParcelableExtra(intent, DETAIL_PRODUCT, ProductUiModel::class.java)
+        val uiModel = IntentCompat.getParcelableExtra(intent, PRODUCT_ID, ProductUiModel::class.java)
+        val recentProductId = intent.getStringExtra(RECENT_PRODUCT_ID)
 
         setContent {
             AndroidshoppingTheme {
@@ -33,12 +34,15 @@ class ProductDetailActivity : ComponentActivity() {
     }
 
     companion object {
-        private const val DETAIL_PRODUCT = "product_id"
+        private const val PRODUCT_ID = "product_id"
+        private const val RECENT_PRODUCT_ID = "recent_product_id"
 
         fun newIntent(
             context: Context,
-            uiModel: ProductUiModel,
+            id: String,
+            recentProductId: String? = null,
         ): Intent = Intent(context, ProductDetailActivity::class.java)
-            .putExtra(DETAIL_PRODUCT, uiModel)
+            .putExtra(PRODUCT_ID, id)
+            .putExtra(RECENT_PRODUCT_ID, recentProductId)
     }
 }
