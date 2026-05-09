@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import coil3.util.CoilUtils.result
+import kotlin.collections.filter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
+import woowacourse.shopping.AppContainer.recentProductRepository
 import woowacourse.shopping.constants.MockData
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
@@ -19,11 +22,11 @@ import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductUiModel
 
 data class ProductListUiState(
-    val products: List<Product> = emptyList(),
-    val cart: Cart = Cart(emptyList()),
+    val productUiModels: List<ProductUiModel> = emptyList(),
+    val recentProducts: List<ProductUiModel> = emptyList(),
     val isLoading: Boolean = false,
     val isEnd: Boolean = false,
-    val recentProducts: List<ProductUiModel> = emptyList(),
+    val cartTotalQuantity: Int = 0,
 )
 
 class ProductListViewModel(
@@ -34,9 +37,12 @@ class ProductListViewModel(
 
     private val _uiState = MutableStateFlow(ProductListUiState())
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
+
+    private var products: List<Product> = emptyList()
+    private var cart: Cart = Cart(emptyList())
     fun initialLoading() {
         viewModelScope.launch {
-            refreshCart()
+            cart = refreshCart()
             fetchAndAppendProducts(20)
             refreshRecentProducts()
         }
@@ -47,27 +53,23 @@ class ProductListViewModel(
     }
 
     fun increase(productId: String) {
-        val product = _uiState.value.products.firstOrNull { it.id == productId }
+        val product = products.firstOrNull { it.id == productId }
         require(product != null) { "존재하지 않는 상품입니다." }
 
         viewModelScope.launch {
             cartRepository.increase(product)
-            refreshCart()
+            cart = refreshCart()
         }
     }
 
     fun decrease(productId: String) {
-        val product = _uiState.value.products.firstOrNull { it.id == productId }
+        val product = products.firstOrNull { it.id == productId }
         require(product != null) { "존재하지 않는 상품입니다." }
 
         viewModelScope.launch {
             cartRepository.decrease(productId)
-            refreshCart()
+            cart = refreshCart()
         }
-    }
-
-    fun cartRefresh() {
-        viewModelScope.launch { refreshCart() }
     }
 
     fun insertRecentProduct(productId: String) {
@@ -80,17 +82,23 @@ class ProductListViewModel(
         viewModelScope.launch { refreshRecentProducts() }
     }
 
-    private suspend fun refreshCart() {
-        val cart = cartRepository.loadCart()
-        _uiState.update { it.copy(cart = cart) }
+    private suspend fun refreshCart(): Cart {
+        val newCart = cartRepository.loadCart()
+        _uiState.update { it.copy(cartTotalQuantity = newCart.totalQuantityOf()) }
+        return newCart
+    }
+
+    fun cartRefresh() {
+        viewModelScope.launch { refreshCart() }
     }
 
     private suspend fun fetchAndAppendProducts(pageSize: Int) {
         _uiState.update { it.copy(isLoading = true) }
-        val result = productRepository.loadProducts(uiState.value.products.size, pageSize)
+        val result = productRepository.loadProducts(products.size, pageSize)
+        products = products + result
         _uiState.update {
             it.copy(
-                products = it.products + result,
+                productUiModels = products.map(::toProductUiModel),
                 isLoading = false,
                 isEnd = result.size >= MockData.MOCK_PRODUCTS.size,
             )
@@ -99,9 +107,11 @@ class ProductListViewModel(
 
     private suspend fun refreshRecentProducts() {
         val recentProductIds = recentProductRepository.loadProducts()
-        val recents = uiState.value.products.filter { it.id in recentProductIds }
+        val recents = products.filter { it.id in recentProductIds }
         _uiState.update {
-            it.copy(recentProducts = recents.map(::toProductUiModel))
+            it.copy(
+                recentProducts = recents.map(::toProductUiModel),
+            )
         }
     }
 
@@ -111,7 +121,7 @@ class ProductListViewModel(
             price = product.priceAmount(),
             imageUrl = product.imageUrl,
             id = product.id,
-            quantity = uiState.value.cart.quantityOf(product.id),
+            quantity = cart.quantityOf(product.id),
         )
     }
 

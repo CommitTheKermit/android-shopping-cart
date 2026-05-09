@@ -54,7 +54,7 @@ fun ProductListScreen(
         topBar = {
             ProductListAppBar(
                 onCartIconClick = onCartIconClick,
-                cartQuantities = state.cart.totalQuantityOf(),
+                cartQuantities = state.cartTotalQuantity,
             )
         },
     ) { innerPadding ->
@@ -91,7 +91,7 @@ fun ProductListScreen(
                     }
 
                     ProductList(
-                        products = state.products.map(vm::toProductUiModel),
+                        products = state.productUiModels,
                         onProductClick = {
                             vm.insertRecentProduct(it.id)
                             onProductClick(
