@@ -190,3 +190,51 @@ private fun CartScreenPreview() {
         onCloseClick = {},
     )
 }
+
+@Preview
+@Composable
+private fun PageNavigatorPreview() {
+    PageNavigator(
+        page = 1,
+        onLeftClick = {},
+        onRightClick = {},
+        canMoveToPreviousPage = false,
+        canMoveToNextPage = true,
+    )
+}
+
+@Preview
+@Composable
+private fun PageButtonPreview() {
+    PageButton(
+        text = ">",
+        onClick = {},
+        isEnable = true,
+    )
+}
+
+@Preview
+@Composable
+private fun CartItemListPreview() {
+    CartItemList(
+        cartContents = listOf(
+            ProductDetailUiModel(
+                id = "1",
+                name = "더미 상품 1",
+                price = 10000,
+                imageUrl = "",
+                quantity = 1,
+            ),
+            ProductDetailUiModel(
+                id = "2",
+                name = "더미 상품 2",
+                price = 20000,
+                imageUrl = "",
+                quantity = 3,
+            ),
+        ),
+        onDelete = {},
+        onIncrease = {},
+        onDecrease = {},
+    )
+}

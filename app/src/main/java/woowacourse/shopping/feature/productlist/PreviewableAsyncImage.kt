@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -28,5 +29,14 @@ fun PreviewableAsyncImage(
             .fillMaxWidth(),
         error =
         painterResource(R.drawable.ic_launcher_background),
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewableAsyncImagePreview() {
+    PreviewableAsyncImage(
+        imageUrl = "",
+        description = "더미 이미지",
     )
 }

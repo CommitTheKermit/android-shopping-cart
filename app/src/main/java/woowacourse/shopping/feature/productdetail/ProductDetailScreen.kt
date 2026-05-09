@@ -254,3 +254,9 @@ private fun ProductScreenPreview() {
 private fun ProductErrorScreenPreview() {
     ProductDetailErrorScreen(onCloseClick = {})
 }
+
+@Preview
+@Composable
+private fun CartPutButtonPreview() {
+    CartPutButton(onClick = {})
+}

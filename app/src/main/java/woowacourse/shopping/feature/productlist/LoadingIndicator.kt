@@ -13,7 +13,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
 fun LoadingIndicator(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
@@ -24,4 +23,10 @@ fun LoadingIndicator(modifier: Modifier = Modifier) {
     ) {
         CircularProgressIndicator()
     }
+}
+
+@Preview
+@Composable
+private fun LoadingIndicatorPreview() {
+    LoadingIndicator()
 }
