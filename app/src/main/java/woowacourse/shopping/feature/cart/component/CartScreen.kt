@@ -61,9 +61,11 @@ fun CartScreen(
                     .padding(innerPadding),
             ) {
                 CartItemList(
-                    uiState.cartContents,
+                    uiState.paginatedCartContents,
                     modifier = Modifier.weight(1f),
                     onDelete = viewModel::deleteCartItem,
+                    onIncrease = { viewModel.increase(it) },
+                    onDecrease = { viewModel.decrease(it) },
                 )
                 Spacer(modifier = Modifier.height(40.dp))
                 PageNavigator(
@@ -148,6 +150,8 @@ private fun PageButton(
 private fun CartItemList(
     cartContents: List<ProductUiModel>,
     onDelete: (String) -> Unit,
+    onIncrease: (String) -> Unit,
+    onDecrease: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -164,8 +168,15 @@ private fun CartItemList(
                 imageUrl = it.imageUrl,
                 name = it.name,
                 price = it.price,
+                quantity = it.quantity,
                 onDelete = {
                     onDelete(it.id)
+                },
+                onIncrease = {
+                    onIncrease(it.id)
+                },
+                onDecrease = {
+                    onDecrease(it.id)
                 },
             )
         }

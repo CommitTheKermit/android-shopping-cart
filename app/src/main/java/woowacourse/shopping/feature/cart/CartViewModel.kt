@@ -1,8 +1,5 @@
 package woowacourse.shopping.feature.cart
 
-import android.R.attr.name
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -23,7 +20,7 @@ data class CartUiState(
     val cart: Cart = Cart(emptyList()),
     val isLoading: Boolean = true,
     val page: Int = 1,
-    val cartContents: List<ProductUiModel> = emptyList(),
+    val paginatedCartContents: List<ProductUiModel> = emptyList(),
     val cartSize: Int = 0,
 )
 
@@ -42,8 +39,14 @@ class CartViewModel(
             val cartContents = pagination(
                 page = 1,
             )
-            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
+            val cart = getCart()
+            _uiState.update { it.copy(isLoading = false, paginatedCartContents = cartContents, cart = cart) }
         }
+    }
+
+    private suspend fun getCart(): Cart {
+        val cart = cartRepository.loadCart()
+        return cart
     }
 
     private suspend fun getCartSize(): Int {
@@ -70,7 +73,7 @@ class CartViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val cartContents = pagination(page)
-            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
+            _uiState.update { it.copy(isLoading = false, paginatedCartContents = cartContents) }
         }
     }
 
@@ -84,7 +87,7 @@ class CartViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val cartContents = pagination(page)
-            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
+            _uiState.update { it.copy(isLoading = false, paginatedCartContents = cartContents) }
         }
     }
 
@@ -99,12 +102,38 @@ class CartViewModel(
         return cartContents
     }
 
+    fun increase(productId: String) {
+        val product = _uiState.value.cart.getProductList().firstOrNull { it.id == productId }
+        require(product != null) { "존재하지 않는 상품입니다." }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            cartRepository.increase(product)
+            val cart = getCart()
+            val cartContents = pagination(uiState.value.page)
+            _uiState.update { it.copy(isLoading = false, cart = cart, paginatedCartContents = cartContents) }
+        }
+    }
+
+    fun decrease(productId: String) {
+        val product = _uiState.value.cart.getProductList().firstOrNull { it.id == productId }
+        require(product != null) { "존재하지 않는 상품입니다." }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            cartRepository.decrease(productId)
+            val cart = getCart()
+            val cartContents = pagination(uiState.value.page)
+            _uiState.update { it.copy(isLoading = false, cart = cart, paginatedCartContents = cartContents) }
+        }
+    }
+
     fun deleteCartItem(id: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             cartRepository.remove(id)
             val cartContents = pagination(uiState.value.page)
-            _uiState.update { it.copy(isLoading = false, cartContents = cartContents) }
+            _uiState.update { it.copy(isLoading = false, paginatedCartContents = cartContents) }
         }
     }
 

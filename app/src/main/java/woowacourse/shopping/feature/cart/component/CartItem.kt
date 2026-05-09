@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.cart.component
 
+import android.R.attr.end
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,10 @@ fun CartItem(
     imageUrl: String,
     name: String,
     price: String,
+    quantity: Int,
     onDelete: () -> Unit,
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -83,7 +87,9 @@ fun CartItem(
             )
             Column(horizontalAlignment = Alignment.End) {
                 ProductQuantitySelector(
-                    quantity = 0,
+                    quantity = quantity,
+                    onIncrease = onIncrease,
+                    onDecrease = onDecrease,
                     modifier = Modifier
                         .padding(end = 5.dp)
                         .size(width = 126.dp, height = 42.dp),
@@ -108,5 +114,8 @@ private fun CartItemPreview() {
         name = "프리뷰",
         price = "1,000원",
         onDelete = {},
+        onIncrease = {},
+        onDecrease = {},
+        quantity = 33,
     )
 }
