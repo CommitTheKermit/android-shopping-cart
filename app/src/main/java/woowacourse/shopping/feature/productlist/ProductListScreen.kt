@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.productlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -79,12 +80,13 @@ fun ProductListScreen(
                                     state.mostRecentProductId,
                                 )
                             },
-                            modifier = Modifier.padding(20.dp),
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp),
                         )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(10.dp),
+                                .height(5.dp)
+                                .background(Color(0xff555555)),
                         )
                     }
 
