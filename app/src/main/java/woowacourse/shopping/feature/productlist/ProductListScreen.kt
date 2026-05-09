@@ -76,9 +76,7 @@ fun ProductListScreen(
                                 vm.insertRecentProduct(it.id)
                                 onProductClick(
                                     it.id,
-                                    if (state.recentProducts.isNotEmpty()) {
-                                        state.recentProducts.first().id
-                                    } else null,
+                                    state.mostRecentProductId,
                                 )
                             },
                             modifier = Modifier.padding(20.dp),

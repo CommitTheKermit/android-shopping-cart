@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.productdetail
 
+import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -76,6 +77,7 @@ fun ProductDetailScreen(
                 activityFinish()
             },
             onClickRecentButton = onClickRecentButton,
+            shouldShowMostRecentProduct = uiState.shouldShowMostRecentProduct,
             modifier = modifier,
         )
     }
@@ -90,6 +92,7 @@ fun ProductDetailContent(
     decrease: () -> Unit,
     onAddCartButton: () -> Unit,
     onClickRecentButton: (String) -> Unit,
+    shouldShowMostRecentProduct: Boolean,
     recentProductDetailUiModel: ProductDetailUiModel? = null,
     modifier: Modifier = Modifier,
 ) {
@@ -148,12 +151,11 @@ fun ProductDetailContent(
                         ),
                     )
                 }
-                if (recentProductDetailUiModel != null) {
+                if (recentProductDetailUiModel != null && shouldShowMostRecentProduct) {
                     RecentProductLetter(
                         productDetailUiModel = recentProductDetailUiModel,
                         modifier = Modifier.padding(top = 30.dp),
                         onClickRecentProduct = onClickRecentButton,
-
                     )
                 }
             }
@@ -243,6 +245,7 @@ private fun ProductScreenPreview() {
         decrease = { },
         onAddCartButton = { },
         onClickRecentButton = {},
+        shouldShowMostRecentProduct = true,
     )
 }
 

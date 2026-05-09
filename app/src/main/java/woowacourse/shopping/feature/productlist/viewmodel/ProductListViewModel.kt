@@ -4,14 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import coil3.util.CoilUtils.result
 import kotlin.collections.filter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import woowacourse.shopping.AppContainer
 import woowacourse.shopping.AppContainer.cartRepository
 import woowacourse.shopping.AppContainer.productRepository
 import woowacourse.shopping.AppContainer.recentProductRepository
@@ -26,6 +24,7 @@ import woowacourse.shopping.feature.common.state.ProductUiModel
 data class ProductListUiState(
     val productUiModels: List<ProductUiModel> = emptyList(),
     val recentProducts: List<ProductUiModel> = emptyList(),
+    val mostRecentProductId: String? = null,
     val isLoading: Boolean = false,
     val isEnd: Boolean = false,
     val cartTotalQuantity: Int = 0,
@@ -131,6 +130,7 @@ class ProductListViewModel(
         _uiState.update {
             it.copy(
                 recentProducts = recents.map(::toProductUiModel),
+                mostRecentProductId = recents.first().id,
             )
         }
     }
@@ -149,9 +149,9 @@ class ProductListViewModel(
         val Factory = viewModelFactory {
             initializer {
                 ProductListViewModel(
-                    AppContainer.cartRepository,
-                    AppContainer.productRepository,
-                    AppContainer.recentProductRepository,
+                    cartRepository,
+                    productRepository,
+                    recentProductRepository,
                 )
             }
         }

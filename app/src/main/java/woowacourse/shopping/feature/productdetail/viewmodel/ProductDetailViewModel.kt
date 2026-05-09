@@ -20,6 +20,7 @@ data class ProductDetailUiState(
     val recentProductDetailUiModel: ProductDetailUiModel? = null,
     val quantity: Int = 1,
     val isLoading: Boolean = false,
+    val shouldShowMostRecentProduct: Boolean = false,
 )
 
 class ProductDetailViewModel(
@@ -38,20 +39,23 @@ class ProductDetailViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             product = getProduct(productId)
+
+            if (recentProductId != null &&
+                productId != recentProductId
+            ) {
+                val recentProductDetailUiModel = getProduct(recentProductId)
+                _uiState.update {
+                    it.copy(
+                        recentProductDetailUiModel = toProductDetailUiModel(recentProductDetailUiModel),
+                        shouldShowMostRecentProduct = true,
+                    )
+                }
+            }
             _uiState.update {
                 it.copy(
                     productDetailUiModel = toProductDetailUiModel(product),
                     isLoading = false,
                 )
-            }
-            if (recentProductId != null) {
-                val recentProductDetailUiModel = getProduct(recentProductId)
-                _uiState.update {
-                    it.copy(
-                        recentProductDetailUiModel = toProductDetailUiModel(recentProductDetailUiModel),
-                        isLoading = false,
-                    )
-                }
             }
         }
     }
