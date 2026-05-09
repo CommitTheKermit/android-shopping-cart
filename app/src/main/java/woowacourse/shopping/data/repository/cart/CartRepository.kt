@@ -15,4 +15,8 @@ interface CartRepository {
         pageSize: Int,
     ): List<CartContent>
     suspend fun remove(productId: String)
+    suspend fun setProductQuantity(
+        product: Product,
+        quantity: Int,
+    )
 }

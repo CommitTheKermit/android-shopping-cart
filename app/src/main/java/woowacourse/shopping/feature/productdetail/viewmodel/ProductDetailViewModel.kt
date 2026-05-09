@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
+import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductDetailUiModel
@@ -22,6 +23,7 @@ data class ProductDetailUiState(
 
 class ProductDetailViewModel(
     private val productRepository: ProductRepository,
+    private val cartRepository: CartRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProductDetailUiState())
     val uiState: StateFlow<ProductDetailUiState> = _uiState.asStateFlow()
@@ -67,10 +69,22 @@ class ProductDetailViewModel(
         }
     }
 
+    fun addToCart() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            cartRepository.setProductQuantity(product, uiState.value.quantity)
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                )
+            }
+        }
+    }
+
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                ProductDetailViewModel(AppContainer.productRepository)
+                ProductDetailViewModel(AppContainer.productRepository, AppContainer.cartRepository)
             }
         }
     }

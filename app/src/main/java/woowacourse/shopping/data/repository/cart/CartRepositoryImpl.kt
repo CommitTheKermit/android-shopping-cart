@@ -27,12 +27,7 @@ class CartRepositoryImpl(
     }
 
     override suspend fun increase(product: Product) {
-        val existing = cartDao.findById(product.id)
-        if (existing == null) {
-            cartDao.insert(product.toEntity(quantity = 1))
-        } else {
-            cartDao.update(existing.copy(quantity = existing.quantity + 1))
-        }
+        increase(product, 1)
     }
 
     override suspend fun decrease(productId: String) {
@@ -54,6 +49,25 @@ class CartRepositoryImpl(
 
     override suspend fun remove(productId: String) {
         cartDao.deleteById(productId)
+    }
+
+    override suspend fun setProductQuantity(
+        product: Product,
+        quantity: Int,
+    ) {
+        increase(product, quantity)
+    }
+
+    private suspend fun increase(
+        product: Product,
+        quantity: Int,
+    ) {
+        val existing = cartDao.findById(product.id)
+        if (existing == null) {
+            cartDao.insert(product.toEntity(quantity = quantity))
+        } else {
+            cartDao.update(existing.copy(quantity = existing.quantity + quantity))
+        }
     }
 
     private fun CartItemEntity.toCartContent(): CartContent = CartContent(

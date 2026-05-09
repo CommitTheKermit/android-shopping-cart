@@ -44,8 +44,7 @@ import woowacourse.shopping.feature.productlist.PreviewableAsyncImage
 @Composable
 fun ProductDetailScreen(
     id: String,
-    onCloseClick: () -> Unit,
-    onAddToCartClick: () -> Unit,
+    activityFinish: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProductDetailViewModel = viewModel(factory = ProductDetailViewModel.Factory),
 ) {
@@ -65,13 +64,13 @@ fun ProductDetailScreen(
 
     when {
         uiState.isLoading -> LoadingIndicator()
-        productDetailUiModel == null -> ProductDetailErrorScreen(onCloseClick)
+        productDetailUiModel == null -> ProductDetailErrorScreen(activityFinish)
         else -> Scaffold(
             containerColor = Color.White,
             modifier = modifier.fillMaxSize(),
             topBar = {
                 ProductAppBar(
-                    onCloseClick = onCloseClick,
+                    onCloseClick = activityFinish,
                 )
             },
         ) { innerPadding ->
@@ -119,7 +118,10 @@ fun ProductDetailScreen(
                     }
                 }
                 CartPutButton(
-                    onClick = onAddToCartClick,
+                    onClick = {
+                        viewModel.addToCart()
+                        activityFinish()
+                    },
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
@@ -191,8 +193,7 @@ fun ProductDetailErrorScreen(
 @Composable
 private fun ProductScreenPreview() {
     ProductDetailScreen(
-        onCloseClick = {},
-        onAddToCartClick = {},
+        activityFinish = {},
         id = "1",
     )
 }

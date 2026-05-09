@@ -25,10 +25,7 @@ class ProductDetailActivity : ComponentActivity() {
                 } else {
                     ProductDetailScreen(
                         id = uiModel.id,
-                        onCloseClick = { finish() },
-                        onAddToCartClick = {
-                            finish()
-                        },
+                        activityFinish = { finish() },
                     )
                 }
             }
