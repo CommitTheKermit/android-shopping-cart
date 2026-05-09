@@ -13,6 +13,7 @@ import woowacourse.shopping.AppContainer
 import woowacourse.shopping.constants.MockData
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
+import woowacourse.shopping.data.repository.recentproduct.RecentProductRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductUiModel
@@ -22,11 +23,13 @@ data class ProductListUiState(
     val cart: Cart = Cart(emptyList()),
     val isLoading: Boolean = false,
     val isEnd: Boolean = false,
+    val recentProducts: List<ProductUiModel> = emptyList(),
 )
 
 class ProductListViewModel(
     private val cartRepository: CartRepository,
     private val productRepository: ProductRepository,
+    private val recentProductRepository: RecentProductRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductListUiState())
@@ -34,6 +37,7 @@ class ProductListViewModel(
     fun initialLoading() {
         cartRefresh()
         loadingFetch()
+        loadRecentProducts()
     }
 
     fun loadingFetch() {
@@ -85,6 +89,21 @@ class ProductListViewModel(
         return productRepository.loadProducts(uiState.value.products.size, pageSize)
     }
 
+    fun insertRecentProduct(productId: String) {
+        viewModelScope.launch {
+            recentProductRepository.insert(productId)
+        }
+    }
+
+    fun loadRecentProducts() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val recentProductIds = recentProductRepository.loadProducts()
+            val recentProducts = uiState.value.products.filter { it.id in recentProductIds }
+            _uiState.update { it.copy(isLoading = false, recentProducts = recentProducts.map(::toProductUiModel)) }
+        }
+    }
+
     fun toProductUiModel(product: Product): ProductUiModel {
         return ProductUiModel.of(
             name = product.name,
@@ -94,10 +113,15 @@ class ProductListViewModel(
             quantity = uiState.value.cart.quantityOf(product.id),
         )
     }
+
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                ProductListViewModel(AppContainer.cartRepository, AppContainer.productRepository)
+                ProductListViewModel(
+                    AppContainer.cartRepository,
+                    AppContainer.productRepository,
+                    AppContainer.recentProductRepository,
+                )
             }
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import woowacourse.shopping.R
 import woowacourse.shopping.feature.common.state.ProductUiModel
@@ -37,8 +38,7 @@ fun ProductList(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
-            .fillMaxWidth()
-            .padding(20.dp),
+            .fillMaxWidth(),
     ) {
         items(
             key = { it.id },
@@ -79,4 +79,17 @@ fun ProductList(
                 }
             }
     }
+}
+
+@Preview
+@Composable
+private fun ProductListPreview() {
+    ProductList(
+        products = emptyList(),
+        onProductClick = { },
+        onLoading = { },
+        onIncrease = { },
+        onDecrease = { },
+        isEnd = false,
+    )
 }

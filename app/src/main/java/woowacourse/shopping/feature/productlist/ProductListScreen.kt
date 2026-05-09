@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -36,8 +38,10 @@ fun ProductListScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME)
+            if (event == Lifecycle.Event.ON_RESUME) {
                 vm.cartRefresh()
+                vm.loadRecentProducts()
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -46,7 +50,8 @@ fun ProductListScreen(
     val state by vm.uiState.collectAsStateWithLifecycle()
     Scaffold(
         containerColor = Color.White,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         topBar = {
             ProductListAppBar(
                 onCartIconClick = onCartIconClick,
@@ -64,14 +69,33 @@ fun ProductListScreen(
                     .fillMaxSize()
                     .weight(1f),
             ) {
-                ProductList(
-                    products = state.products.map(vm::toProductUiModel),
-                    onProductClick = onProductClick,
-                    onLoading = vm::loadingFetch,
-                    onIncrease = vm::increase,
-                    onDecrease = vm::decrease,
-                    isEnd = state.isEnd,
-                )
+                Column {
+                    if (state.recentProducts.isNotEmpty()) {
+                        RecentProductList(
+                            recentProducts = state.recentProducts,
+                            onRecentProductClick = { vm.insertRecentProduct(it) },
+                            modifier = Modifier.padding(20.dp),
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(10.dp),
+                        )
+                    }
+
+                    ProductList(
+                        products = state.products.map(vm::toProductUiModel),
+                        onProductClick = {
+                            vm.insertRecentProduct(it.id)
+                            onProductClick(it)
+                        },
+                        onLoading = vm::loadingFetch,
+                        onIncrease = vm::increase,
+                        onDecrease = vm::decrease,
+                        isEnd = state.isEnd,
+                        modifier = Modifier.padding(20.dp),
+                    )
+                }
                 if (state.isLoading) {
                     LoadingIndicator()
                 }

@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.productlist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import woowacourse.shopping.feature.common.state.ProductUiModel
 @Composable
 fun RecentProductList(
     recentProducts: List<ProductUiModel>,
+    onRecentProductClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -35,7 +37,13 @@ fun RecentProductList(
                     PreviewableAsyncImage(
                         imageUrl = it.imageUrl,
                         description = it.name,
-                        modifier = Modifier.size(98.dp),
+                        modifier = Modifier
+                            .size(98.dp)
+                            .clickable(
+                                onClick = {
+                                    onRecentProductClick(it.id)
+                                },
+                            ),
                     )
                     Text(
                         it.name,
@@ -62,5 +70,6 @@ private fun RecentProductListPreview() {
                 quantity = 0,
             )
         },
+        onRecentProductClick = {},
     )
 }

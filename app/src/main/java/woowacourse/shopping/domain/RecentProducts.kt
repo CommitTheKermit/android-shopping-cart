@@ -1,6 +1,7 @@
 package woowacourse.shopping.domain
+
 class RecentProducts(
-    private val products: List<Product>,
+    val products: List<Product>,
 ) {
     fun addProduct(newProduct: Product): RecentProducts {
         var newProducts = products
