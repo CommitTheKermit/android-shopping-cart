@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.DecimalFormat
 import woowacourse.shopping.R
 import woowacourse.shopping.feature.common.ProductQuantitySelector
+import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 import woowacourse.shopping.feature.format.NumberFormatRule
 import woowacourse.shopping.feature.format.PriceFormatter
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailViewModel
@@ -46,6 +47,7 @@ fun ProductDetailScreen(
     id: String,
     activityFinish: () -> Unit,
     modifier: Modifier = Modifier,
+    recentProductId: String? = null,
     viewModel: ProductDetailViewModel = viewModel(factory = ProductDetailViewModel.Factory),
 ) {
     LaunchedEffect(Unit) {
@@ -57,74 +59,99 @@ fun ProductDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val productDetailUiModel = uiState.productDetailUiModel
 
+    when {
+        uiState.isLoading -> LoadingIndicator()
+        productDetailUiModel == null -> ProductDetailErrorScreen(activityFinish)
+        else -> ProductDetailContent(
+            productDetailUiModel = productDetailUiModel,
+            quantity = uiState.quantity,
+            activityFinish = activityFinish,
+            increase = viewModel::increase,
+            decrease = viewModel::decrease,
+            onAddCartButton = {
+                viewModel.addToCart()
+                activityFinish()
+            },
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+fun ProductDetailContent(
+    productDetailUiModel: ProductDetailUiModel,
+    quantity: Int,
+    activityFinish: () -> Unit,
+    increase: () -> Unit,
+    decrease: () -> Unit,
+    onAddCartButton: () -> Unit,
+    recentProductId: String? = null,
+    modifier: Modifier = Modifier,
+) {
+
     val priceFormatter = PriceFormatter(
         rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
         suffix = "원",
     )
-
-    when {
-        uiState.isLoading -> LoadingIndicator()
-        productDetailUiModel == null -> ProductDetailErrorScreen(activityFinish)
-        else -> Scaffold(
-            containerColor = Color.White,
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                ProductAppBar(
-                    onCloseClick = activityFinish,
+    Scaffold(
+        containerColor = Color.White,
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            ProductAppBar(
+                onCloseClick = activityFinish,
+            )
+        },
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            Column {
+                PreviewableAsyncImage(
+                    imageUrl = productDetailUiModel.imageUrl,
+                    description = productDetailUiModel.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f),
                 )
-            },
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-            ) {
-                Column {
-                    PreviewableAsyncImage(
-                        imageUrl = productDetailUiModel.imageUrl,
-                        description = productDetailUiModel.name,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f),
-                    )
+                Text(
+                    text = productDetailUiModel.name,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
+                )
+                HorizontalDivider()
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp, horizontal = 18.dp),
+                ) {
                     Text(
-                        text = productDetailUiModel.name,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
+                        text = priceFormatter.format(productDetailUiModel.price * quantity),
+                        fontWeight = FontWeight.W400,
+                        fontSize = 20.sp,
                     )
-                    HorizontalDivider()
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp, horizontal = 18.dp),
-                    ) {
-                        Text(
-                            text = priceFormatter.format(productDetailUiModel.price * uiState.quantity),
-                            fontWeight = FontWeight.W400,
-                            fontSize = 20.sp,
-                        )
-                        ProductQuantitySelector(
-                            decreaseEnabled = uiState.quantity > 1,
-                            quantity = uiState.quantity,
-                            onIncrease = viewModel::increase,
-                            onDecrease = viewModel::decrease,
-                            modifier = Modifier.size(
-                                width = 126.dp,
-                                height = 42.dp,
-                            ),
-                        )
-                    }
+                    ProductQuantitySelector(
+                        decreaseEnabled = quantity > 1,
+                        quantity = quantity,
+                        onIncrease = increase,
+                        onDecrease = decrease,
+                        modifier = Modifier.size(
+                            width = 126.dp,
+                            height = 42.dp,
+                        ),
+                    )
                 }
-                CartPutButton(
-                    onClick = {
-                        viewModel.addToCart()
-                        activityFinish()
-                    },
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
             }
+            if (recentProductId != null) {
+            }
+
+            CartPutButton(
+                onClick = onAddCartButton,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
         }
     }
 }
@@ -192,9 +219,19 @@ fun ProductDetailErrorScreen(
 @Preview
 @Composable
 private fun ProductScreenPreview() {
-    ProductDetailScreen(
+    ProductDetailContent(
         activityFinish = {},
-        id = "1",
+        productDetailUiModel = ProductDetailUiModel(
+            name = "asd",
+            price = 2000,
+            imageUrl = "",
+            id = "1",
+            quantity = 5,
+        ),
+        quantity = 5,
+        increase = { },
+        decrease = { },
+        onAddCartButton = { },
     )
 }
 

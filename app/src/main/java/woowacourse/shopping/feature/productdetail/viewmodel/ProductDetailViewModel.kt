@@ -17,6 +17,7 @@ import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 
 data class ProductDetailUiState(
     val productDetailUiModel: ProductDetailUiModel? = null,
+    val recentProductDetailUiModel: ProductDetailUiModel? = null,
     val quantity: Int = 1,
     val isLoading: Boolean = false,
 )
@@ -30,14 +31,22 @@ class ProductDetailViewModel(
 
     private lateinit var product: Product
 
-    fun initialLoading(productId: String) {
-        loadingProduct(productId)
-    }
-
-    fun loadingProduct(productId: String) {
+    fun initialLoading(
+        productId: String,
+        recentProductId: String? = null,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            product = productRepository.getProduct(productId)
+            val product = loadingProduct(productId)
+            if (recentProductId != null) {
+                val recentProductDetailUiModel = loadingProduct(recentProductId)
+                _uiState.update {
+                    it.copy(
+                        recentProductDetailUiModel = toProductDetailUiModel(recentProductDetailUiModel),
+                        isLoading = false,
+                    )
+                }
+            }
             _uiState.update {
                 it.copy(
                     productDetailUiModel = toProductDetailUiModel(product),
@@ -45,6 +54,10 @@ class ProductDetailViewModel(
                 )
             }
         }
+    }
+
+    suspend fun loadingProduct(productId: String): Product {
+        return productRepository.getProduct(productId)
     }
 
     fun toProductDetailUiModel(product: Product): ProductDetailUiModel {
