@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
+import woowacourse.shopping.AppContainer.cartRepository
+import woowacourse.shopping.AppContainer.productRepository
 import woowacourse.shopping.AppContainer.recentProductRepository
 import woowacourse.shopping.constants.MockData
 import woowacourse.shopping.data.repository.cart.CartRepository
@@ -42,14 +44,18 @@ class ProductListViewModel(
     private var cart: Cart = Cart(emptyList())
     fun initialLoading() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             cart = refreshCart()
             fetchAndAppendProducts(20)
             refreshRecentProducts()
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
     fun loadingFetch() {
-        viewModelScope.launch { fetchAndAppendProducts(20) }
+        viewModelScope.launch {
+            fetchAndAppendProducts(20)
+        }
     }
 
     fun increase(productId: String) {
@@ -57,8 +63,10 @@ class ProductListViewModel(
         require(product != null) { "존재하지 않는 상품입니다." }
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             cartRepository.increase(product)
             cart = refreshCart()
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -67,39 +75,51 @@ class ProductListViewModel(
         require(product != null) { "존재하지 않는 상품입니다." }
 
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             cartRepository.decrease(productId)
             cart = refreshCart()
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
     fun insertRecentProduct(productId: String) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             recentProductRepository.insert(productId)
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
     fun loadRecentProducts() {
-        viewModelScope.launch { refreshRecentProducts() }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            refreshRecentProducts()
+            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun cartRefresh() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            refreshCart()
+            _uiState.update { it.copy(isLoading = false) }
+        }
     }
 
     private suspend fun refreshCart(): Cart {
         val newCart = cartRepository.loadCart()
+
         _uiState.update { it.copy(cartTotalQuantity = newCart.totalQuantityOf()) }
         return newCart
     }
 
-    fun cartRefresh() {
-        viewModelScope.launch { refreshCart() }
-    }
-
     private suspend fun fetchAndAppendProducts(pageSize: Int) {
-        _uiState.update { it.copy(isLoading = true) }
         val result = productRepository.loadProducts(products.size, pageSize)
         products = products + result
+
         _uiState.update {
             it.copy(
                 productUiModels = products.map(::toProductUiModel),
-                isLoading = false,
                 isEnd = result.size >= MockData.MOCK_PRODUCTS.size,
             )
         }
