@@ -22,7 +22,7 @@ import woowacourse.shopping.feature.common.state.ProductUiModel
 @Composable
 fun RecentProductList(
     recentProducts: List<ProductUiModel>,
-    onRecentProductClick: (String) -> Unit,
+    onRecentProductClick: (ProductUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -41,7 +41,7 @@ fun RecentProductList(
                             .size(98.dp)
                             .clickable(
                                 onClick = {
-                                    onRecentProductClick(it.id)
+                                    onRecentProductClick(it)
                                 },
                             ),
                     )

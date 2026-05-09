@@ -35,23 +35,15 @@ class ProductListViewModel(
     private val _uiState = MutableStateFlow(ProductListUiState())
     val uiState: StateFlow<ProductListUiState> = _uiState.asStateFlow()
     fun initialLoading() {
-        cartRefresh()
-        loadingFetch()
-        loadRecentProducts()
+        viewModelScope.launch {
+            refreshCart()
+            fetchAndAppendProducts(20)
+            refreshRecentProducts()
+        }
     }
 
     fun loadingFetch() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val result = fetchProducts(20)
-            _uiState.update {
-                it.copy(
-                    products = _uiState.value.products + result,
-                    isLoading = false,
-                    isEnd = result.size >= MockData.MOCK_PRODUCTS.size,
-                )
-            }
-        }
+        viewModelScope.launch { fetchAndAppendProducts(20) }
     }
 
     fun increase(productId: String) {
@@ -60,7 +52,7 @@ class ProductListViewModel(
 
         viewModelScope.launch {
             cartRepository.increase(product)
-            cartRefresh()
+            refreshCart()
         }
     }
 
@@ -70,23 +62,12 @@ class ProductListViewModel(
 
         viewModelScope.launch {
             cartRepository.decrease(productId)
-            cartRefresh()
+            refreshCart()
         }
     }
 
     fun cartRefresh() {
-        viewModelScope.launch {
-            val cart = cartRepository.loadCart()
-            _uiState.update {
-                it.copy(
-                    cart = cart,
-                )
-            }
-        }
-    }
-
-    private suspend fun fetchProducts(pageSize: Int): List<Product> {
-        return productRepository.loadProducts(uiState.value.products.size, pageSize)
+        viewModelScope.launch { refreshCart() }
     }
 
     fun insertRecentProduct(productId: String) {
@@ -96,11 +77,31 @@ class ProductListViewModel(
     }
 
     fun loadRecentProducts() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val recentProductIds = recentProductRepository.loadProducts()
-            val recentProducts = uiState.value.products.filter { it.id in recentProductIds }
-            _uiState.update { it.copy(isLoading = false, recentProducts = recentProducts.map(::toProductUiModel)) }
+        viewModelScope.launch { refreshRecentProducts() }
+    }
+
+    private suspend fun refreshCart() {
+        val cart = cartRepository.loadCart()
+        _uiState.update { it.copy(cart = cart) }
+    }
+
+    private suspend fun fetchAndAppendProducts(pageSize: Int) {
+        _uiState.update { it.copy(isLoading = true) }
+        val result = productRepository.loadProducts(uiState.value.products.size, pageSize)
+        _uiState.update {
+            it.copy(
+                products = it.products + result,
+                isLoading = false,
+                isEnd = result.size >= MockData.MOCK_PRODUCTS.size,
+            )
+        }
+    }
+
+    private suspend fun refreshRecentProducts() {
+        val recentProductIds = recentProductRepository.loadProducts()
+        val recents = uiState.value.products.filter { it.id in recentProductIds }
+        _uiState.update {
+            it.copy(recentProducts = recents.map(::toProductUiModel))
         }
     }
 
