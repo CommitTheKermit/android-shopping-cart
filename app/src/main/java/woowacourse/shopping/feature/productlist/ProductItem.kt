@@ -1,7 +1,15 @@
 package woowacourse.shopping.feature.productlist
 
 import android.R.attr.name
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,17 +55,34 @@ fun ProductItem(
                 description = name,
                 modifier = Modifier.aspectRatio(1f),
             )
-//            ProductInitialAddButton(modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 4.dp, end = 4.dp))
-            ProductQuantitySelector(
-                quantity = quantity,
-                onIncrease = onIncrease,
-                onDecrease = onDecrease,
-                modifier = Modifier
-                    .height(42.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 6.dp, start = 4.dp, end = 4.dp),
-            )
+            AnimatedContent(
+                targetState = quantity == 0,
+                transitionSpec = {
+                    (fadeIn(tween(200)) + scaleIn(initialScale = 0.8f)) togetherWith
+                        (fadeOut(tween(150)) + scaleOut(targetScale = 0.8f))
+                },
+                label = "quantity-control",
+                modifier = Modifier.align(Alignment.BottomEnd),
+            ) { isEmpty ->
+                if (isEmpty) {
+                    ProductInitialAddButton(
+                        modifier = Modifier
+                            .size(45.dp)
+                            .padding(bottom = 4.dp, end = 4.dp)
+                            .clickable(onClick = onIncrease),
+                    )
+                } else {
+                    ProductQuantitySelector(
+                        quantity = quantity,
+                        onIncrease = onIncrease,
+                        onDecrease = onDecrease,
+                        modifier = Modifier
+                            .height(42.dp)
+                            .fillMaxWidth()
+                            .padding(bottom = 6.dp, start = 4.dp, end = 4.dp),
+                    )
+                }
+            }
         }
         Spacer(modifier = Modifier.height(9.dp))
         Text(
@@ -101,14 +126,13 @@ fun ProductInitialAddButton(modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(48.dp)
             .clip(CircleShape)
             .background(Color.White),
     ) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = stringResource(R.string.add_product_description),
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(35.dp),
             tint = Color(0xff555555),
         )
     }
