@@ -25,21 +25,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.text.DecimalFormat
 import woowacourse.shopping.R
 import woowacourse.shopping.feature.common.ProductQuantitySelector
+import woowacourse.shopping.feature.format.NumberFormatRule
+import woowacourse.shopping.feature.format.PriceFormatter
 import woowacourse.shopping.feature.productlist.PreviewableAsyncImage
 
 @Composable
 fun CartItem(
     imageUrl: String,
     name: String,
-    price: String,
+    price: Int,
     quantity: Int,
     onDelete: () -> Unit,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val priceFormatter = PriceFormatter(
+        rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
+        suffix = "원",
+    )
+
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = modifier
@@ -50,7 +58,6 @@ fun CartItem(
                 width = 1.dp,
             )
             .padding(horizontal = 12.dp, vertical = 18.dp),
-
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,7 +103,7 @@ fun CartItem(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = price,
+                    text = priceFormatter.format(price * quantity),
                     fontWeight = FontWeight.W400,
                     fontSize = 16.sp,
                     color = Color(0xff555555),
@@ -112,7 +119,7 @@ private fun CartItemPreview() {
     CartItem(
         imageUrl = "",
         name = "프리뷰",
-        price = "1,000원",
+        price = 1000,
         onDelete = {},
         onIncrease = {},
         onDecrease = {},

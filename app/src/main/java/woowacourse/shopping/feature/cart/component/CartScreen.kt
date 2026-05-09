@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import woowacourse.shopping.feature.cart.CartViewModel
-import woowacourse.shopping.feature.common.state.ProductUiModel
+import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 import woowacourse.shopping.feature.productlist.LoadingIndicator
 
 @Composable
@@ -148,7 +148,7 @@ private fun PageButton(
 
 @Composable
 private fun CartItemList(
-    cartContents: List<ProductUiModel>,
+    cartContents: List<ProductDetailUiModel>,
     onDelete: (String) -> Unit,
     onIncrease: (String) -> Unit,
     onDecrease: (String) -> Unit,

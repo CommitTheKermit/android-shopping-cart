@@ -14,13 +14,13 @@ import woowacourse.shopping.AppContainer.cartRepository
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
-import woowacourse.shopping.feature.common.state.ProductUiModel
+import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 
 data class CartUiState(
     val cart: Cart = Cart(emptyList()),
     val isLoading: Boolean = true,
     val page: Int = 1,
-    val paginatedCartContents: List<ProductUiModel> = emptyList(),
+    val paginatedCartContents: List<ProductDetailUiModel> = emptyList(),
     val cartSize: Int = 0,
 )
 
@@ -94,11 +94,13 @@ class CartViewModel(
     private suspend fun pagination(
         page: Int,
         pageSize: Int = 5,
-    ): List<ProductUiModel> {
+    ): List<ProductDetailUiModel> {
         val toIndex = minOf(page * pageSize, uiState.value.cartSize)
         val startIndex = (page - 1) * pageSize
 
-        val cartContents = cartRepository.pagination(startIndex, toIndex).map(::toProductUiModel)
+        val cartContents = cartRepository
+            .pagination(startIndex, toIndex)
+            .map(::toProductUiModel)
         return cartContents
     }
 
@@ -137,9 +139,9 @@ class CartViewModel(
         }
     }
 
-    fun toProductUiModel(cartContent: CartContent): ProductUiModel {
+    fun toProductUiModel(cartContent: CartContent): ProductDetailUiModel {
         val product = cartContent.product
-        return ProductUiModel.of(
+        return ProductDetailUiModel(
             name = product.name,
             price = product.priceAmount(),
             imageUrl = product.imageUrl,
