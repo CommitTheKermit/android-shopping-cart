@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlin.collections.filter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -130,7 +129,8 @@ class ProductListViewModel(
 
     private suspend fun refreshRecentProducts() {
         val recentProductIds = recentProductRepository.loadProducts()
-        val recents = products.filter { it.id in recentProductIds }
+        val productById = products.associateBy { it.id }
+        val recents = recentProductIds.mapNotNull { productById[it] }
         if (recents.isEmpty()) return
 
         _uiState.update {

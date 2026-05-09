@@ -30,7 +30,6 @@ fun RecentProductList(
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(
-                key = { it.id },
                 items = recentProducts,
             ) {
                 Column {
