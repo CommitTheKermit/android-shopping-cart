@@ -37,9 +37,15 @@ class ProductDetailViewModel(
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val product = loadingProduct(productId)
+            product = getProduct(productId)
+            _uiState.update {
+                it.copy(
+                    productDetailUiModel = toProductDetailUiModel(product),
+                    isLoading = false,
+                )
+            }
             if (recentProductId != null) {
-                val recentProductDetailUiModel = loadingProduct(recentProductId)
+                val recentProductDetailUiModel = getProduct(recentProductId)
                 _uiState.update {
                     it.copy(
                         recentProductDetailUiModel = toProductDetailUiModel(recentProductDetailUiModel),
@@ -47,16 +53,10 @@ class ProductDetailViewModel(
                     )
                 }
             }
-            _uiState.update {
-                it.copy(
-                    productDetailUiModel = toProductDetailUiModel(product),
-                    isLoading = false,
-                )
-            }
         }
     }
 
-    suspend fun loadingProduct(productId: String): Product {
+    suspend fun getProduct(productId: String): Product {
         return productRepository.getProduct(productId)
     }
 
