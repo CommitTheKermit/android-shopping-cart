@@ -12,7 +12,5 @@ class Product(
         require(name.isNotBlank()) { "상품 제목은 공백일 수 없습니다." }
     }
 
-    fun isSame(other: Product): Boolean = this.id == other.id
-
     fun priceAmount(): Int = price.amount
 }
