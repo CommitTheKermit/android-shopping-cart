@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import woowacourse.shopping.data.local.recentproduct.RecentProductDao
 import woowacourse.shopping.data.local.recentproduct.RecentProductEntity
 
-@Database(entities = [RecentProductEntity::class], version = 2, exportSchema = false)
+@Database(entities = [RecentProductEntity::class], version = 1, exportSchema = false)
 abstract class RecentProductDatabase : RoomDatabase() {
     abstract fun recentProductDao(): RecentProductDao
 }
