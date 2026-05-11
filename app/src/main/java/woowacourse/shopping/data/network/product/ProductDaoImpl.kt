@@ -1,13 +1,18 @@
 package woowacourse.shopping.data.network.product
 
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import woowacourse.shopping.AppContainer.client
-import woowacourse.shopping.AppContainer.json
+import okhttp3.Response
 import woowacourse.shopping.domain.Product
 
 class ProductDaoImpl(
@@ -18,7 +23,7 @@ class ProductDaoImpl(
     override suspend fun findAllProduct(
         startIndex: Int,
         pageSize: Int,
-    ): List<Product> = withContext(Dispatchers.IO) {
+    ): List<Product> {
         val url = baseUrl.newBuilder()
             .addPathSegment("products")
             .addQueryParameter("startIndex", startIndex.toString())
@@ -26,13 +31,37 @@ class ProductDaoImpl(
             .build()
 
         val request = Request.Builder().url(url).build()
+        val call = client.newCall(request)
 
-        client.newCall(request).execute().use { response ->
-            check(response.isSuccessful) { "products 요청 실패: ${response.code}" }
+        return suspendCancellableCoroutine { continuation ->
+            continuation.invokeOnCancellation { call.cancel() }
+            call.enqueue(
+                object : Callback {
+                    override fun onResponse(
+                        call: Call,
+                        response: Response,
+                    ) {
+                        response.use {
+                            runCatching {
+                                check(it.isSuccessful) { "products 요청 실패: ${it.code}" }
+                                val body = it.body?.string().orEmpty()
+                                json.decodeFromString<List<ProductDto>>(body)
+                                    .map(ProductDto::toDomain)
+                            }.fold(
+                                onSuccess = { result -> continuation.resume(result) },
+                                onFailure = { e -> continuation.resumeWithException(e) },
+                            )
+                        }
+                    }
 
-            val body = response.body?.string().orEmpty()
-            json.decodeFromString<List<ProductDto>>(body)
-                .map(ProductDto::toDomain)
+                    override fun onFailure(
+                        call: Call,
+                        e: IOException,
+                    ) {
+                        continuation.resumeWithException(e)
+                    }
+                },
+            )
         }
     }
 
