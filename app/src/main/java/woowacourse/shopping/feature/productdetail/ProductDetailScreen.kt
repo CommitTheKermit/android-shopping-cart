@@ -31,12 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import java.text.DecimalFormat
 import woowacourse.shopping.R
 import woowacourse.shopping.feature.common.ProductQuantitySelector
 import woowacourse.shopping.feature.common.state.ProductUiModel
-import woowacourse.shopping.feature.format.NumberFormatRule
-import woowacourse.shopping.feature.format.PriceFormatter
+import woowacourse.shopping.feature.format.DecimalPriceFormatter
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailLoadingState
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailViewModel
 import woowacourse.shopping.feature.productlist.LoadingIndicator
@@ -100,10 +98,6 @@ fun ProductDetailContent(
     onClickRecentButton: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val priceFormatter = PriceFormatter(
-        rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
-        suffix = "원",
-    )
     Scaffold(
         containerColor = Color.White,
         modifier = modifier.fillMaxSize(),
@@ -140,7 +134,7 @@ fun ProductDetailContent(
                         .padding(vertical = 16.dp, horizontal = 18.dp),
                 ) {
                     Text(
-                        text = priceFormatter.format(ProductUiModel.price * quantity),
+                        text = DecimalPriceFormatter().format(ProductUiModel.price * quantity),
                         fontWeight = FontWeight.W400,
                         fontSize = 20.sp,
                     )
