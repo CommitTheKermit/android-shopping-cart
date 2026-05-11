@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.cart.component
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,11 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import woowacourse.shopping.feature.cart.CartEvent
 import woowacourse.shopping.feature.cart.CartViewModel
 import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productlist.LoadingIndicator
@@ -37,6 +40,7 @@ import woowacourse.shopping.feature.productlist.LoadingIndicator
 @Composable
 fun CartScreen(
     onCloseClick: () -> Unit,
+    activityFinish: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CartViewModel = viewModel(factory = CartViewModel.Factory),
 ) {
@@ -44,6 +48,17 @@ fun CartScreen(
         viewModel.initialLoading()
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is CartEvent.FatalError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    activityFinish()
+                }
+            }
+        }
+    }
 
     Scaffold(
         containerColor = Color.White,
@@ -188,6 +203,7 @@ private fun CartItemList(
 private fun CartScreenPreview() {
     CartScreen(
         onCloseClick = {},
+        activityFinish = {},
     )
 }
 

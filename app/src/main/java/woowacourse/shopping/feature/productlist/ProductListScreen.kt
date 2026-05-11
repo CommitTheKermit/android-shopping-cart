@@ -1,5 +1,6 @@
 package woowacourse.shopping.feature.productlist
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -22,6 +24,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import woowacourse.shopping.feature.productlist.viewmodel.ProductListEvent
 import woowacourse.shopping.feature.productlist.viewmodel.ProductListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,10 +33,22 @@ fun ProductListScreen(
     vm: ProductListViewModel = viewModel(factory = ProductListViewModel.Factory),
     onProductClick: (String, String?) -> Unit,
     onCartIconClick: () -> Unit,
+    activityFinish: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
         vm.initialLoading()
+    }
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        vm.event.collect { event ->
+            when (event) {
+                is ProductListEvent.FatalError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    activityFinish()
+                }
+            }
+        }
     }
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -122,5 +137,6 @@ private fun PreviewProductListScreen() {
     ProductListScreen(
         onProductClick = { _, _ -> },
         onCartIconClick = { },
+        activityFinish = { },
     )
 }

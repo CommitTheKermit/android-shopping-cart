@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
@@ -14,7 +17,14 @@ import woowacourse.shopping.AppContainer.cartRepository
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
+import woowacourse.shopping.domain.ProductNotFoundException
 import woowacourse.shopping.feature.common.state.ProductUiModel
+
+sealed interface CartEvent {
+    data class FatalError(
+        val message: String,
+    ) : CartEvent
+}
 
 data class CartUiState(
     val isLoading: Boolean = true,
@@ -28,6 +38,10 @@ class CartViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CartUiState())
     val uiState: StateFlow<CartUiState> = _uiState.asStateFlow()
+
+    private val _event = Channel<CartEvent>(Channel.BUFFERED)
+    val event: Flow<CartEvent> = _event.receiveAsFlow()
+
     private var cart: Cart = Cart(emptyList())
 
     fun initialLoading() {
@@ -102,9 +116,9 @@ class CartViewModel(
         return cartContents
     }
 
-    fun increase(productId: String) {
+    fun increase(productId: String) = guardFatal {
         val product = cart.getProductList().firstOrNull { it.id == productId }
-        require(product != null) { "존재하지 않는 상품입니다." }
+            ?: throw ProductNotFoundException(productId)
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -115,9 +129,9 @@ class CartViewModel(
         }
     }
 
-    fun decrease(productId: String) {
-        val product = cart.getProductList().firstOrNull { it.id == productId }
-        require(product != null) { "존재하지 않는 상품입니다." }
+    fun decrease(productId: String) = guardFatal {
+        cart.getProductList().firstOrNull { it.id == productId }
+            ?: throw ProductNotFoundException(productId)
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -125,6 +139,14 @@ class CartViewModel(
             cart = getCart()
             val cartContents = pagination(uiState.value.page)
             _uiState.update { it.copy(isLoading = false, paginatedCartContents = cartContents) }
+        }
+    }
+
+    private inline fun guardFatal(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: ProductNotFoundException) {
+            _event.trySend(CartEvent.FatalError(e.message ?: "알 수 없는 오류가 발생했습니다."))
         }
     }
 

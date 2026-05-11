@@ -16,6 +16,7 @@ class CartActivity : ComponentActivity() {
             AndroidshoppingTheme {
                 CartScreen(
                     onCloseClick = { finish() },
+                    activityFinish = { finish() },
                 )
             }
         }
