@@ -58,8 +58,9 @@ class CartRepositoryImpl(
         quantity: Int,
     ) {
         val existing = cartDao.findById(productId)
+        if (quantity < 1) return
         if (existing != null) {
-            cartDao.update(existing.copy(quantity = existing.quantity + quantity))
+            cartDao.update(existing.copy(quantity = quantity))
         } else {
             val product = productRepository.getProduct(productId)
             cartDao.insert(product.toEntity(quantity = quantity))

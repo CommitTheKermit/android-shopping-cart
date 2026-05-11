@@ -28,6 +28,7 @@ sealed interface ProductDetailLoadingState {
     data class Success(
         val product: ProductUiModel,
     ) : ProductDetailLoadingState
+
     data class Error(
         val errorString: String,
     ) : ProductDetailLoadingState
@@ -102,7 +103,11 @@ class ProductDetailViewModel(
         val loadingState = uiState.value.productState as? ProductDetailLoadingState.Success
             ?: return
         viewModelScope.launch {
-            cartRepository.setProductQuantity(loadingState.product.id, uiState.value.quantity)
+            val cart = cartRepository.loadCart()
+            val previousQuantity = cart.quantityOf(
+                productId = loadingState.product.id,
+            )
+            cartRepository.setProductQuantity(loadingState.product.id, previousQuantity + uiState.value.quantity)
         }
     }
 
