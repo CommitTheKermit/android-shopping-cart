@@ -1,5 +1,6 @@
 package woowacourse.shopping.data.repository.cart
 
+import androidx.room.Transaction
 import woowacourse.shopping.data.local.recentproduct.RecentProductDao
 import woowacourse.shopping.data.local.recentproduct.RecentProductEntity
 import woowacourse.shopping.data.repository.recentproduct.RecentProductRepository
@@ -11,6 +12,7 @@ class RecentProductRepositoryImpl(
         return recentProductDao.findAll(MAX_SIZE)
     }
 
+    @Transaction
     override suspend fun insert(id: String) {
         recentProductDao.insert(
             RecentProductEntity(
