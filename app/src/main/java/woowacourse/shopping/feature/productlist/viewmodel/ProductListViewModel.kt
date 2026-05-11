@@ -142,7 +142,7 @@ class ProductListViewModel(
     }
 
     fun toProductUiModel(product: Product): ProductUiModel {
-        return ProductUiModel.of(
+        return ProductUiModel(
             name = product.name,
             price = product.priceAmount(),
             imageUrl = product.imageUrl,

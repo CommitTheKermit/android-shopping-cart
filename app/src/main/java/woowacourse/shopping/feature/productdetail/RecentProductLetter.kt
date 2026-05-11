@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import woowacourse.shopping.R
-import woowacourse.shopping.feature.common.state.ProductDetailUiModel
+import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailLoadingState
 
 @Composable
@@ -100,7 +100,7 @@ fun RecentProductLetter(
 fun RecentProductLetterPreview(modifier: Modifier = Modifier) {
     RecentProductLetter(
         loadingState = ProductDetailLoadingState.Success(
-            ProductDetailUiModel(
+            ProductUiModel(
                 name = "asdqwe",
                 price = 1000,
                 imageUrl = "",

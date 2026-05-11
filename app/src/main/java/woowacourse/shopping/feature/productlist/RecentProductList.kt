@@ -63,7 +63,7 @@ private fun RecentProductListPreview() {
         recentProducts = MockData.MOCK_PRODUCTS.map {
             ProductUiModel(
                 name = it.name,
-                price = "",
+                price = 1000,
                 imageUrl = it.imageUrl,
                 id = it.id,
                 quantity = 0,

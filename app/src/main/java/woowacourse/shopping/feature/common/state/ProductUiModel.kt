@@ -9,32 +9,17 @@ import woowacourse.shopping.feature.format.PriceFormatter
 @Parcelize
 data class ProductUiModel(
     val name: String,
-    val price: String,
+    val price: Int,
     val imageUrl: String,
     val id: String,
     val quantity: Int,
 ) : Parcelable {
+    fun formattedPrice(quantity: Int = 1): String = priceFormatter.format(price * quantity)
+
     companion object {
-        fun of(
-            name: String,
-            price: Int,
-            imageUrl: String,
-            id: String,
-            quantity: Int,
-        ): ProductUiModel {
-
-            val priceFormatter = PriceFormatter(
-                rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
-                suffix = "원",
-            )
-
-            return ProductUiModel(
-                name = name,
-                price = priceFormatter.format(price),
-                imageUrl = imageUrl,
-                id = id,
-                quantity = quantity,
-            )
-        }
+        private val priceFormatter = PriceFormatter(
+            rule = NumberFormatRule { DecimalFormat("#,###").format(it) },
+            suffix = "원",
+        )
     }
 }

@@ -15,7 +15,7 @@ import woowacourse.shopping.AppContainer.productRepository
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Product
-import woowacourse.shopping.feature.common.state.ProductDetailUiModel
+import woowacourse.shopping.feature.common.state.ProductUiModel
 
 data class ProductDetailUiState(
     val productState: ProductDetailLoadingState = ProductDetailLoadingState.Loading,
@@ -27,7 +27,7 @@ sealed interface ProductDetailLoadingState {
     data object None : ProductDetailLoadingState
     data object Loading : ProductDetailLoadingState
     data class Success(
-        val product: ProductDetailUiModel,
+        val product: ProductUiModel,
     ) : ProductDetailLoadingState
     data class Error(
         val errorString: String,
@@ -68,7 +68,7 @@ class ProductDetailViewModel(
 
     suspend fun getProduct(productId: String): ProductDetailLoadingState = runCatching { productRepository.getProduct(productId) }
         .fold(
-            onSuccess = { ProductDetailLoadingState.Success(toProductDetailUiModel(it)) },
+            onSuccess = { ProductDetailLoadingState.Success(toProductUiModel(it)) },
             onFailure = {
                 ProductDetailLoadingState.Error(
                     it.message
@@ -77,8 +77,8 @@ class ProductDetailViewModel(
             },
         )
 
-    fun toProductDetailUiModel(product: Product): ProductDetailUiModel {
-        return ProductDetailUiModel(
+    fun toProductUiModel(product: Product): ProductUiModel {
+        return ProductUiModel(
             name = product.name,
             price = product.priceAmount(),
             imageUrl = product.imageUrl,

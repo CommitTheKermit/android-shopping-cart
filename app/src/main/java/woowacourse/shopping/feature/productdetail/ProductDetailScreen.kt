@@ -34,7 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.DecimalFormat
 import woowacourse.shopping.R
 import woowacourse.shopping.feature.common.ProductQuantitySelector
-import woowacourse.shopping.feature.common.state.ProductDetailUiModel
+import woowacourse.shopping.feature.common.state.ProductUiModel
 import woowacourse.shopping.feature.format.NumberFormatRule
 import woowacourse.shopping.feature.format.PriceFormatter
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailLoadingState
@@ -72,7 +72,7 @@ fun ProductDetailScreen(
             productState is ProductDetailLoadingState.None -> ProductDetailErrorScreen(activityFinish)
 
         productState is ProductDetailLoadingState.Success -> ProductDetailContent(
-            productDetailUiModel = productState.product,
+            ProductUiModel = productState.product,
             recentProductLoadingState = recentState,
             quantity = uiState.quantity,
             activityFinish = activityFinish,
@@ -90,7 +90,7 @@ fun ProductDetailScreen(
 
 @Composable
 fun ProductDetailContent(
-    productDetailUiModel: ProductDetailUiModel,
+    ProductUiModel: ProductUiModel,
     recentProductLoadingState: ProductDetailLoadingState,
     quantity: Int,
     activityFinish: () -> Unit,
@@ -120,14 +120,14 @@ fun ProductDetailContent(
         ) {
             Column {
                 PreviewableAsyncImage(
-                    imageUrl = productDetailUiModel.imageUrl,
-                    description = productDetailUiModel.name,
+                    imageUrl = ProductUiModel.imageUrl,
+                    description = ProductUiModel.name,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f),
                 )
                 Text(
-                    text = productDetailUiModel.name,
+                    text = ProductUiModel.name,
                     fontWeight = FontWeight.W700,
                     fontSize = 24.sp,
                     modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
@@ -140,7 +140,7 @@ fun ProductDetailContent(
                         .padding(vertical = 16.dp, horizontal = 18.dp),
                 ) {
                     Text(
-                        text = priceFormatter.format(productDetailUiModel.price * quantity),
+                        text = priceFormatter.format(ProductUiModel.price * quantity),
                         fontWeight = FontWeight.W400,
                         fontSize = 20.sp,
                     )
@@ -234,7 +234,7 @@ fun ProductDetailErrorScreen(
 private fun ProductScreenPreview() {
     ProductDetailContent(
         activityFinish = {},
-        productDetailUiModel = ProductDetailUiModel(
+        ProductUiModel = ProductUiModel(
             name = "asd",
             price = 2000,
             imageUrl = "",
