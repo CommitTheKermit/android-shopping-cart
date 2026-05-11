@@ -42,7 +42,6 @@ object AppContainer {
             "shopping.db",
         ).build()
         database = shoppingDatabase
-        _cartRepository = CartRepositoryImpl(shoppingDatabase.cartDao())
 
         val recentProductDatabase = Room.databaseBuilder(
             context.applicationContext,
@@ -57,6 +56,11 @@ object AppContainer {
                 baseUrl = "http://localhost:12345/".toHttpUrl(),
                 json = json,
             ),
+        )
+
+        _cartRepository = CartRepositoryImpl(
+            cartDao = shoppingDatabase.cartDao(),
+            productRepository = checkNotNull(_productRepository),
         )
     }
 }

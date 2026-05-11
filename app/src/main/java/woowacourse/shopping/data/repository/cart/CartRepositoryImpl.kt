@@ -3,6 +3,7 @@ package woowacourse.shopping.data.repository.cart
 import kotlin.collections.map
 import woowacourse.shopping.data.local.cart.CartDao
 import woowacourse.shopping.data.local.cart.CartItemEntity
+import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Cart
 import woowacourse.shopping.domain.CartContent
 import woowacourse.shopping.domain.Money
@@ -10,6 +11,7 @@ import woowacourse.shopping.domain.Product
 
 class CartRepositoryImpl(
     private val cartDao: CartDao,
+    private val productRepository: ProductRepository,
 ) : CartRepository {
 
     override suspend fun loadCart(): Cart {
@@ -52,10 +54,16 @@ class CartRepositoryImpl(
     }
 
     override suspend fun setProductQuantity(
-        product: Product,
+        productId: String,
         quantity: Int,
     ) {
-        increase(product, quantity)
+        val existing = cartDao.findById(productId)
+        if (existing != null) {
+            cartDao.update(existing.copy(quantity = existing.quantity + quantity))
+        } else {
+            val product = productRepository.getProduct(productId)
+            cartDao.insert(product.toEntity(quantity = quantity))
+        }
     }
 
     private suspend fun increase(

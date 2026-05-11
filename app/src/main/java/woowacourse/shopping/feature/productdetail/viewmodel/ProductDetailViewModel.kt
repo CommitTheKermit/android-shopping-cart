@@ -88,14 +88,10 @@ class ProductDetailViewModel(
     }
 
     fun addToCart() {
+        val loadingState = uiState.value.productState as? ProductDetailLoadingState.Success
+            ?: return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            cartRepository.setProductQuantity(product, uiState.value.quantity)
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                )
-            }
+            cartRepository.setProductQuantity(loadingState.product.id, uiState.value.quantity)
         }
     }
 

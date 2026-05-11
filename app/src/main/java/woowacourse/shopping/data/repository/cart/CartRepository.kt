@@ -16,7 +16,7 @@ interface CartRepository {
     ): List<CartContent>
     suspend fun remove(productId: String)
     suspend fun setProductQuantity(
-        product: Product,
+        productId: String,
         quantity: Int,
     )
 }
