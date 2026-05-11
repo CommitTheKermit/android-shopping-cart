@@ -7,6 +7,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import woowacourse.shopping.data.local.RecentProductDatabase
 import woowacourse.shopping.data.local.ShoppingDatabase
+import woowacourse.shopping.data.network.product.ProductDaoImpl
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.cart.CartRepositoryImpl
 import woowacourse.shopping.data.repository.cart.RecentProductRepositoryImpl
@@ -51,9 +52,11 @@ object AppContainer {
         _recentProductRepository = RecentProductRepositoryImpl(recentProductDatabase.recentProductDao())
 
         _productRepository = ProductRepositoryImpl(
-            client = client,
-            baseUrl = "http://localhost:12345/".toHttpUrl(),
-            json = json,
+            productDao = ProductDaoImpl(
+                client = client,
+                baseUrl = "http://localhost:12345/".toHttpUrl(),
+                json = json,
+            ),
         )
     }
 }
