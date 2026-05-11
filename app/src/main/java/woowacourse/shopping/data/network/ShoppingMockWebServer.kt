@@ -75,9 +75,11 @@ private fun fetchProducts(
     startIndex: Int,
     pageSize: Int,
 ): List<Product> {
-    val toOffset = minOf(startIndex + pageSize, MockData.MOCK_PRODUCTS.size)
-    val products = MockData.MOCK_PRODUCTS.subList(startIndex, toOffset)
-    return products
+    val size = MockData.MOCK_PRODUCTS.size
+    if (startIndex !in 0..size || pageSize <= 0) return emptyList()
+
+    val toOffset = minOf(startIndex + pageSize, size)
+    return MockData.MOCK_PRODUCTS.subList(startIndex, toOffset)
 }
 
 private fun notFound(): MockResponse = MockResponse().setResponseCode(404)
