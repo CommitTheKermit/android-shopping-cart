@@ -1,6 +1,5 @@
 package woowacourse.shopping.feature.cart.component
 
-import android.R.attr.end
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -97,7 +96,7 @@ fun CartItem(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = DecimalPriceFormatter("원").apply(price * quantity),
+                    text = DecimalPriceFormatter().format(price * quantity),
                     fontWeight = FontWeight.W400,
                     fontSize = 16.sp,
                     color = Color(0xff555555),
