@@ -14,7 +14,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        AppContainer.init(applicationContext)
 
         val toCartIntent = Intent(this, CartActivity::class.java)
 
