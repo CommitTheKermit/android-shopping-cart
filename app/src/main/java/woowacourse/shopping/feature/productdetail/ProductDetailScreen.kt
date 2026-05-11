@@ -1,6 +1,5 @@
 package woowacourse.shopping.feature.productdetail
 
-import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,7 @@ import woowacourse.shopping.feature.common.ProductQuantitySelector
 import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 import woowacourse.shopping.feature.format.NumberFormatRule
 import woowacourse.shopping.feature.format.PriceFormatter
+import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailLoadingState
 import woowacourse.shopping.feature.productdetail.viewmodel.ProductDetailViewModel
 import woowacourse.shopping.feature.productlist.LoadingIndicator
 import woowacourse.shopping.feature.productlist.PreviewableAsyncImage
@@ -60,14 +60,20 @@ fun ProductDetailScreen(
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val productDetailUiModel = uiState.productDetailUiModel
+
+    val productState = uiState.productState
+    val recentState = uiState.recentProductState
 
     when {
-        uiState.isLoading -> LoadingIndicator()
-        productDetailUiModel == null -> ProductDetailErrorScreen(activityFinish)
-        else -> ProductDetailContent(
-            productDetailUiModel = productDetailUiModel,
-            recentProductDetailUiModel = uiState.recentProductDetailUiModel,
+        productState is ProductDetailLoadingState.Loading ||
+            recentState is ProductDetailLoadingState.Loading -> LoadingIndicator()
+
+        productState is ProductDetailLoadingState.Error ||
+            productState is ProductDetailLoadingState.None -> ProductDetailErrorScreen(activityFinish)
+
+        productState is ProductDetailLoadingState.Success -> ProductDetailContent(
+            productDetailUiModel = productState.product,
+            recentProductLoadingState = recentState,
             quantity = uiState.quantity,
             activityFinish = activityFinish,
             increase = viewModel::increase,
@@ -77,7 +83,6 @@ fun ProductDetailScreen(
                 activityFinish()
             },
             onClickRecentButton = onClickRecentButton,
-            shouldShowMostRecentProduct = uiState.shouldShowMostRecentProduct,
             modifier = modifier,
         )
     }
@@ -86,14 +91,13 @@ fun ProductDetailScreen(
 @Composable
 fun ProductDetailContent(
     productDetailUiModel: ProductDetailUiModel,
+    recentProductLoadingState: ProductDetailLoadingState,
     quantity: Int,
     activityFinish: () -> Unit,
     increase: () -> Unit,
     decrease: () -> Unit,
     onAddCartButton: () -> Unit,
     onClickRecentButton: (String) -> Unit,
-    shouldShowMostRecentProduct: Boolean,
-    recentProductDetailUiModel: ProductDetailUiModel? = null,
     modifier: Modifier = Modifier,
 ) {
     val priceFormatter = PriceFormatter(
@@ -151,13 +155,10 @@ fun ProductDetailContent(
                         ),
                     )
                 }
-                if (recentProductDetailUiModel != null && shouldShowMostRecentProduct) {
-                    RecentProductLetter(
-                        productDetailUiModel = recentProductDetailUiModel,
-                        modifier = Modifier.padding(top = 30.dp),
-                        onClickRecentProduct = onClickRecentButton,
-                    )
-                }
+                RecentProductLetter(
+                    loadingState = recentProductLoadingState,
+                    onClickRecentProduct = onClickRecentButton,
+                )
             }
 
             CartPutButton(
@@ -245,7 +246,7 @@ private fun ProductScreenPreview() {
         decrease = { },
         onAddCartButton = { },
         onClickRecentButton = {},
-        shouldShowMostRecentProduct = true,
+        recentProductLoadingState = ProductDetailLoadingState.Error("asd"),
     )
 }
 

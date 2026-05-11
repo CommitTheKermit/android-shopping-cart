@@ -10,18 +10,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import woowacourse.shopping.AppContainer
+import woowacourse.shopping.AppContainer.cartRepository
+import woowacourse.shopping.AppContainer.productRepository
 import woowacourse.shopping.data.repository.cart.CartRepository
 import woowacourse.shopping.data.repository.product.ProductRepository
 import woowacourse.shopping.domain.Product
 import woowacourse.shopping.feature.common.state.ProductDetailUiModel
 
 data class ProductDetailUiState(
-    val productDetailUiModel: ProductDetailUiModel? = null,
-    val recentProductDetailUiModel: ProductDetailUiModel? = null,
+    val productState: ProductDetailLoadingState = ProductDetailLoadingState.Loading,
+    val recentProductState: ProductDetailLoadingState = ProductDetailLoadingState.None,
     val quantity: Int = 1,
-    val isLoading: Boolean = false,
-    val shouldShowMostRecentProduct: Boolean = false,
 )
+
+sealed interface ProductDetailLoadingState {
+    data object None : ProductDetailLoadingState
+    data object Loading : ProductDetailLoadingState
+    data class Success(
+        val product: ProductDetailUiModel,
+    ) : ProductDetailLoadingState
+    data class Error(
+        val errorString: String,
+    ) : ProductDetailLoadingState
+}
 
 class ProductDetailViewModel(
     private val productRepository: ProductRepository,
@@ -30,40 +41,41 @@ class ProductDetailViewModel(
     private val _uiState = MutableStateFlow(ProductDetailUiState())
     val uiState: StateFlow<ProductDetailUiState> = _uiState.asStateFlow()
 
-    private lateinit var product: Product
-
     fun initialLoading(
         productId: String,
         recentProductId: String? = null,
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val newProduct = getProduct(productId)
-
-            product = newProduct
-            if (recentProductId != null &&
-                productId != recentProductId
-            ) {
-                val recentProductDetailUiModel = getProduct(recentProductId)
+            _uiState.update { it.copy(productState = ProductDetailLoadingState.Loading) }
+            val productLoadingState = getProduct(productId)
+            if (recentProductId != null && productId != recentProductId) {
+                val recentProductLoadingState = getProduct(recentProductId)
                 _uiState.update {
                     it.copy(
-                        recentProductDetailUiModel = toProductDetailUiModel(recentProductDetailUiModel),
-                        shouldShowMostRecentProduct = true,
+                        productState = productLoadingState,
+                        recentProductState = recentProductLoadingState,
                     )
                 }
-            }
-            _uiState.update {
-                it.copy(
-                    productDetailUiModel = toProductDetailUiModel(product),
-                    isLoading = false,
-                )
+            } else {
+                _uiState.update {
+                    it.copy(
+                        productState = productLoadingState,
+                    )
+                }
             }
         }
     }
 
-    suspend fun getProduct(productId: String): Product {
-        return productRepository.getProduct(productId)
-    }
+    suspend fun getProduct(productId: String): ProductDetailLoadingState = runCatching { productRepository.getProduct(productId) }
+        .fold(
+            onSuccess = { ProductDetailLoadingState.Success(toProductDetailUiModel(it)) },
+            onFailure = {
+                ProductDetailLoadingState.Error(
+                    it.message
+                        ?: "unknown error",
+                )
+            },
+        )
 
     fun toProductDetailUiModel(product: Product): ProductDetailUiModel {
         return ProductDetailUiModel(
@@ -77,13 +89,13 @@ class ProductDetailViewModel(
 
     fun increase() {
         _uiState.update {
-            it.copy(quantity = uiState.value.quantity + 1)
+            it.copy(quantity = it.quantity + 1)
         }
     }
 
     fun decrease() {
         _uiState.update {
-            it.copy(quantity = uiState.value.quantity - 1)
+            it.copy(quantity = it.quantity - 1)
         }
     }
 
