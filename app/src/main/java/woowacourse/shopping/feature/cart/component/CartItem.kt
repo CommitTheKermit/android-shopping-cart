@@ -97,7 +97,7 @@ fun CartItem(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = DecimalPriceFormatter().format(price * quantity),
+                    text = DecimalPriceFormatter("원").apply(price * quantity),
                     fontWeight = FontWeight.W400,
                     fontSize = 16.sp,
                     color = Color(0xff555555),
