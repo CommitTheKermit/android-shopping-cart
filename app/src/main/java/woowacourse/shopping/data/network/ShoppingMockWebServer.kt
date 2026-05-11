@@ -38,12 +38,12 @@ fun startMockWebServer(): MockWebServer {
                 }
 
                 "/product" -> {
-                    val id = url.queryParameter("id")
-                        ?: 0
+                    val id = url.queryParameter("id").toString()
 
-                    val product = MockData.MOCK_PRODUCTS.first {
+                    val product = MockData.MOCK_PRODUCTS.firstOrNull {
                         it.id == id
                     }
+                        ?: return notFound()
 
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
