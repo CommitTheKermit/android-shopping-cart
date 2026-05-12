@@ -16,6 +16,9 @@ ktlint = "14.2.0"
 ksp = "2.3.0"
 lifecycleViewmodelCompose = "2.10.0"
 room = "2.8.4"
+json = "20250107"
+kotlinx-coroutines-test = "1.10.2"
+assertj = "3.27.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +43,9 @@ kotest-runner-junit5 = { group = "io.kotest", name = "kotest-runner-junit5", ver
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+json = { module = "org.json:json", version.ref = "json" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 
 
 [plugins]

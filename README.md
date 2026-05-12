@@ -4,41 +4,44 @@
 
 ### 도메인
 
+> Cart/CartContent 의 plus/minus, addQuantity/changeQuantity/decreaseQuantity 와 RecentProducts 정책은
+> CartRepository / RecentProductRepository 의 연산으로 이전되어 ViewModel 테스트로 검증한다.
+
 - Money
     - [x] 두 Money를 더하면 금액의 합인 Money를 반환한다
     - [x] 두 Money를 빼면 금액의 차인 Money를 반환한다
     - [x] Money에 수량(Int)을 곱하면 금액이 곱해진 Money를 반환한다
 - CartContent
-    - [x] 상품의 수량을 바꿀 수 있다
-    - [x] 수량을 빼면 빠진 새 CartContent를 반환한다
-    - [x] 뺀 결과가 1개 미만이면 오류가 발생한다
+    - [x] 상품의 수량이 1개 미만이면 오류가 발생한다
+    - [x] 입력받은 상품의 id가 CartItem 의 상품 id 와 같으면 true, 다르면 false 를 반환한다
 - Cart
-    - [x] 이미 존재하는 상품을 추가하면 수량이 합쳐진 Cart 를 반환한다
-    - [x] 삭제 수량이 보유 수량과 같으면 해당 상품이 제거된 Cart 를 반환한다
-    - [x] 삭제 수량이 보유 수량보다 적으면 수량이 줄어든 Cart 를 반환한다
-    - [x] 삭제 수량이 보유 수량보다 많으면 예외를 발생시킨다
-- RecentProducts
-    - [x] 상품을 추가하면 가장 최신 위치에 들어간다
-    - [x] 동일 상품을 다시 추가하면 중복 없이 가장 최신 위치로 이동한다
-    - [x] 11번째 상품을 추가하면 가장 오래된 상품이 밀려나 항상 10개 이하로 유지된다
+    - [x] quantityOf 는 해당 상품의 수량을 반환하고, 없으면 0 을 반환한다
+    - [x] totalQuantityOf 는 모든 상품 수량의 합을 반환한다
 
 ### ViewModel
 
 - ProductListViewModel
-    - [ ] 초기 진입 시 상품 목록을 불러와 state.products 에 노출한다
-    - [ ] 최근 본 상품이 state.recentProducts 에 노출된다
-    - [ ] 수량 증감 이벤트의 결과 Cart 가 state.products 에 반영된다
-    - [ ] 장바구니에서 수량이 바뀌면 state.products 에도 반영된다
+    - [x] 초기 진입 시 상품 목록을 불러와 state.productUiModels 에 노출한다
+    - [x] 최근 본 상품이 state.recentProducts 에 노출된다
+    - [x] 수량 증가 이벤트의 결과가 state.productUiModels 의 수량에 반영된다
+    - [x] 이미 존재하는 상품을 추가하면 수량이 누적된다 *(Cart 도메인 이전)*
+    - [x] 보유 수량과 같은 수량을 감소시키면 해당 상품이 제거된다 *(Cart 도메인 이전)*
+    - [x] 보유 수량보다 적게 감소시키면 수량이 줄어든다 *(Cart 도메인 이전)*
+    - [x] 장바구니에서 수량이 바뀐 뒤 cartRefresh 호출 시 state 에 반영된다
+    - [x] insertRecentProduct 는 RecentProductRepository 에 기록을 위임한다 *(RecentProducts 도메인 이전)*
 - ProductDetailViewModel
-    - [ ] 초기 진입 시 상품 상세를 불러와 state.product 에 노출한다
-    - [ ] 상세 진입 시 RecentProductRepository 에 기록을 위임한다
-    - [ ] state.lastViewed 가 도메인 정책의 결과(현재 상품 제외한 최근 본 상품)를 그대로 노출한다
-    - [ ] 수량 증감 이벤트의 결과가 state 에 반영된다
+    - [x] 초기 진입 시 상품 상세를 불러와 state.productState 에 Success 로 노출한다
+    - [x] recentProductId 가 현재 상품과 다르면 state.recentProductState 에 노출된다
+    - [x] recentProductId 가 현재 상품과 같으면 recentProductState 는 None 으로 유지된다
+    - [x] increase / decrease 이벤트의 결과가 state.quantity 에 반영된다
+    - [x] addToCart 는 기존 수량과 현재 quantity 의 합을 CartRepository 에 반영한다
 - CartViewModel
-    - [ ] 초기 진입 시 장바구니 항목을 불러와 state.items 에 노출한다
-    - [ ] 수량 증감 이벤트의 결과가 state.items 에 반영된다
-    - [ ] state.items 가 비면 state.isEmpty = true 가 된다
-    - [ ] 상품 목록에서 수량이 바뀌면 state.items 에도 반영된다
+    - [x] 초기 진입 시 장바구니 항목을 불러와 state.paginatedCartContents 에 노출한다
+    - [x] 이미 존재하는 상품을 증가시키면 수량이 누적된다 *(Cart 도메인 이전)*
+    - [x] 보유 수량과 같은 수량을 감소시키면 해당 상품이 제거된다 *(Cart 도메인 이전)*
+    - [x] 보유 수량보다 적게 감소시키면 수량이 줄어든다 *(Cart 도메인 이전)*
+    - [x] paginatedCartContents 가 비면 isEndPage() 가 true 가 된다
+    - [x] 외부에서 장바구니에 변경이 생기면 재조회 시 state 에 반영된다
 
 ## 기능 목록
 
